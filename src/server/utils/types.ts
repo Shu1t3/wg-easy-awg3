@@ -47,7 +47,7 @@ export const JmaxSchema = z.number().max(1280).nullable();
 export const SSchema = z.number().max(1132).nullable();
 
 const H_MIN = 5;
-const H_MAX = 2 ** 31 - 1;
+const H_MAX = 2 ** 32 - 1; // 4294967295 (Uint32 Max)
 
 export const HSchema = z
   .string()
@@ -60,11 +60,19 @@ export const HSchema = z
 
       if (!v.includes('-')) {
         const num = Number(v);
-        return num >= H_MIN && num <= H_MAX;
+        return !isNaN(num) && num >= H_MIN && num <= H_MAX;
       }
 
       const [min, max] = v.split('-').map(Number);
-      return min && max && min >= H_MIN && max <= H_MAX && min <= max;
+      return (
+        min !== undefined &&
+        max !== undefined &&
+        !isNaN(min) &&
+        !isNaN(max) &&
+        min >= H_MIN &&
+        max <= H_MAX &&
+        min <= max
+      );
     },
     {
       message: t('zod.generic.validNumberRange'),
@@ -78,6 +86,26 @@ export const HSchema = z
     return min === max ? `${min}` : `${min}-${max}`;
   })
   .nullable();
+
+export function parseHRange(val: string | null): [number, number] | null {
+  if (!val) return null;
+  const parts = val.split('-').map(Number);
+  if (parts.length === 1 && !isNaN(parts[0]!)) {
+    return [parts[0]!, parts[0]!];
+  }
+  if (parts.length === 2 && !isNaN(parts[0]!) && !isNaN(parts[1]!)) {
+    return [parts[0]!, parts[1]!] as [number, number];
+  }
+  return null;
+}
+
+export function doRangesOverlap(
+  r1: [number, number] | null,
+  r2: [number, number] | null
+): boolean {
+  if (!r1 || !r2) return false;
+  return r1[0] <= r2[1] && r2[0] <= r1[1];
+}
 
 export function isValidCpsSignature(sig: string | null): boolean {
   if (!sig || sig.trim() === '') return true;

@@ -10,7 +10,10 @@ import {
   JmaxSchema,
   SSchema,
 } from '#server/utils/types';
-import type { InterfaceType } from '#db/repositories/interface/types';
+import {
+  InterfaceUpdateSchema,
+  type InterfaceType,
+} from '#db/repositories/interface/types';
 import type { ClientType } from '#db/repositories/client/types';
 import type { UserConfigType } from '#db/repositories/userConfig/types';
 import type { HooksType } from '#db/repositories/hooks/types';
@@ -189,16 +192,68 @@ describe('AWG 3.0 Configuration Generation', () => {
 });
 
 describe('AWG 3.0 Zod Schema Validation', () => {
-  test('HSchema validates single numbers and range formats', () => {
+  test('HSchema validates single numbers and range formats across full uint32 range', () => {
     expect(HSchema.parse('123456')).toBe('123456');
     expect(HSchema.parse(' 100000 - 200000 ')).toBe('100000-200000');
     expect(HSchema.parse('1000-1000')).toBe('1000');
+    expect(HSchema.parse('4294967295')).toBe('4294967295'); // Full uint32 max
+    expect(HSchema.parse(' 3000000000 - 4000000000 ')).toBe(
+      '3000000000-4000000000'
+    );
     expect(HSchema.parse(null)).toBeNull();
     expect(HSchema.parse('')).toBeNull();
 
+    expect(() => HSchema.parse('4294967296')).toThrow(); // Above uint32 max
     expect(() => HSchema.parse('2000-1000')).toThrow();
     expect(() => HSchema.parse('4')).toThrow(); // Below H_MIN (5)
     expect(() => HSchema.parse('invalid')).toThrow();
+  });
+
+  test('InterfaceUpdateSchema validates non-overlapping H1-H4 ranges', () => {
+    const validUpdate = {
+      ipv4Cidr: '10.8.0.0/24',
+      ipv6Cidr: 'fdcc:ad94:bacf:61a3::/64',
+      mtu: 1420,
+      routingTable: 'auto',
+      jC: 7,
+      jMin: 10,
+      jMax: 1000,
+      s1: 128,
+      s2: 56,
+      s3: 100,
+      s4: 200,
+      h1: '100000-200000',
+      h2: '200001-300000',
+      h3: '300001-400000',
+      h4: '400001-500000',
+      i1: null,
+      i2: null,
+      i3: null,
+      i4: null,
+      i5: null,
+      port: 51820,
+      device: 'wg0',
+      enabled: true,
+      firewallEnabled: false,
+    };
+
+    expect(InterfaceUpdateSchema.parse(validUpdate)).toBeDefined();
+
+    // Overlapping ranges: H1 (100000-200000) and H2 (150000-250000)
+    const overlappingUpdate = {
+      ...validUpdate,
+      h1: '100000-200000',
+      h2: '150000-250000',
+    };
+    expect(() => InterfaceUpdateSchema.parse(overlappingUpdate)).toThrow();
+
+    // Overlapping single value and range: H1 (150000) and H2 (100000-200000)
+    const singleValueOverlap = {
+      ...validUpdate,
+      h1: '150000',
+      h2: '100000-200000',
+    };
+    expect(() => InterfaceUpdateSchema.parse(singleValueOverlap)).toThrow();
   });
 
   test('ISchema validates CPS format and null conversion', () => {

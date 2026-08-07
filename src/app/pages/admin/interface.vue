@@ -143,6 +143,11 @@
         <FormHeading>{{ $t('form.actions') }}</FormHeading>
         <FormPrimaryActionField type="submit" :label="$t('form.save')" />
         <FormSecondaryActionField :label="$t('form.revert')" @click="revert" />
+        <FormSecondaryActionField
+          :label="$t('awg.randomizeHeaders')"
+          class="col-span-2"
+          @click="randomizeHHeaders"
+        />
         <AdminCidrDialog
           trigger-class="col-span-2"
           :ipv4-cidr="data.ipv4Cidr"
@@ -190,6 +195,22 @@ const { data: _data, refresh } = await useFetch(`/api/admin/interface`, {
 });
 
 const data = toRef(_data.value);
+
+function randomizeHHeaders() {
+  if (!data.value) return;
+  const bandSize = Math.floor(4000000000 / 4);
+  const ranges: string[] = [];
+  for (let slot = 0; slot < 4; slot++) {
+    const bandStart = 10000000 + slot * bandSize;
+    const start = bandStart + Math.floor(Math.random() * (bandSize / 2));
+    const span = Math.floor(Math.random() * 500000) + 50000;
+    ranges.push(`${start}-${start + span}`);
+  }
+  data.value.h1 = ranges[0]!;
+  data.value.h2 = ranges[1]!;
+  data.value.h3 = ranges[2]!;
+  data.value.h4 = ranges[3]!;
+}
 
 function applyAwgPreset(presetValues: Record<string, any>) {
   if (!data.value) return;

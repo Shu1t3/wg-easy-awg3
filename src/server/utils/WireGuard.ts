@@ -15,8 +15,13 @@ import type { ClientQueryType } from '#db/repositories/client/types';
 
 const WG_DEBUG = createDebug('WireGuard');
 
-const generateRandomHeaderValue = () =>
-  Math.floor(Math.random() * 2147483642) + 5;
+const generateRandomHeaderRange = (slot: number): string => {
+  const bandSize = Math.floor(4000000000 / 4);
+  const bandStart = 10000000 + slot * bandSize;
+  const start = bandStart + Math.floor(Math.random() * (bandSize / 2));
+  const span = Math.floor(Math.random() * 500000) + 50000;
+  return `${start}-${start + span}`;
+};
 
 class WireGuard {
   /**
@@ -183,19 +188,14 @@ class WireGuard {
       WG_DEBUG('New Wireguard Keys generated successfully.');
     }
 
-    if (wgInterface.h1 === '0') {
-      WG_DEBUG('Generating random AmneziaWG obfuscation parameters...');
-      const headers = new Set<number>();
-
-      while (headers.size < 4) {
-        headers.add(generateRandomHeaderValue());
-      }
-      const [h1, h2, h3, h4] = Array.from(headers);
-
-      wgInterface.h1 = String(h1)!;
-      wgInterface.h2 = String(h2)!;
-      wgInterface.h3 = String(h3)!;
-      wgInterface.h4 = String(h4)!;
+    if (wgInterface.h1 === '0' || !wgInterface.h1) {
+      WG_DEBUG(
+        'Generating random AmneziaWG obfuscation parameters (AWG 3.0 ranges)...'
+      );
+      wgInterface.h1 = generateRandomHeaderRange(0);
+      wgInterface.h2 = generateRandomHeaderRange(1);
+      wgInterface.h3 = generateRandomHeaderRange(2);
+      wgInterface.h4 = generateRandomHeaderRange(3);
 
       await Database.interfaces.update(wgInterface);
     }

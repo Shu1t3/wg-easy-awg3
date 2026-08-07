@@ -37,6 +37,19 @@
             </p>
           </label>
         </div>
+
+        <label
+          class="mt-2 flex cursor-pointer items-center gap-2 rounded border border-gray-200 p-2.5 transition hover:border-gray-300 dark:border-neutral-700 dark:hover:border-neutral-600"
+        >
+          <input
+            v-model="randomizeHeaders"
+            type="checkbox"
+            class="size-4 rounded accent-red-800"
+          />
+          <span class="text-xs font-medium text-gray-700 dark:text-neutral-300">
+            {{ $t('awg.randomizeHeadersOnPreset') }}
+          </span>
+        </label>
       </div>
     </template>
     <template #actions>
@@ -64,6 +77,7 @@ defineProps<{
 const { t } = useI18n();
 
 const selectedPresetId = ref('dns');
+const randomizeHeaders = ref(true);
 
 const presets = computed(() => [
   {
@@ -167,10 +181,40 @@ const presets = computed(() => [
   },
 ]);
 
+function generateRandomHeaderRanges(): {
+  h1: string;
+  h2: string;
+  h3: string;
+  h4: string;
+} {
+  const bandSize = Math.floor(4000000000 / 4);
+  const ranges: string[] = [];
+  for (let slot = 0; slot < 4; slot++) {
+    const bandStart = 10000000 + slot * bandSize;
+    const start = bandStart + Math.floor(Math.random() * (bandSize / 2));
+    const span = Math.floor(Math.random() * 500000) + 50000;
+    ranges.push(`${start}-${start + span}`);
+  }
+  return {
+    h1: ranges[0]!,
+    h2: ranges[1]!,
+    h3: ranges[2]!,
+    h4: ranges[3]!,
+  };
+}
+
 function applyPreset() {
   const preset = presets.value.find((p) => p.id === selectedPresetId.value);
   if (preset) {
-    emit('apply', preset.values);
+    if (preset.id === 'clean') {
+      emit('apply', preset.values);
+    } else {
+      const ranges = generateRandomHeaderRanges();
+      emit('apply', {
+        ...ranges,
+        ...preset.values,
+      });
+    }
   }
 }
 </script>
