@@ -47,7 +47,7 @@
           :description="$t('admin.config.persistentKeepaliveDesc')"
         />
       </FormGroup>
-      <FormGroup v-if="globalStore.information?.isAwg">
+      <FormGroup>
         <FormHeading>{{ $t('awg.obfuscationParameters') }}</FormHeading>
 
         <FormNullNumberField

@@ -210,7 +210,7 @@ class WireGuard {
         err.message.includes(`Cannot find device "${wgInterface.name}"`)
       ) {
         throw new Error(
-          `WireGuard exited with the error: Cannot find device "${wgInterface.name}"\nThis usually means that your host's kernel does not support WireGuard!`,
+          `AmneziaWG exited with the error: Cannot find device "${wgInterface.name}"\nThis usually means that your host's kernel does not support AmneziaWG!`,
           { cause: err.message }
         );
       }

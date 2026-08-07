@@ -3,7 +3,6 @@ import { stringifyIp } from 'ip-bigint';
 
 import { removeNewlines, iptablesTemplate } from '#server/utils/template';
 import { exec } from '#server/utils/cmd';
-import { WG_ENV } from '#server/utils/config';
 import type { ClientType } from '#db/repositories/client/types';
 import type { InterfaceType } from '#db/repositories/interface/types';
 import type { UserConfigType } from '#db/repositories/userConfig/types';
@@ -12,10 +11,6 @@ import type { HooksType } from '#db/repositories/hooks/types';
 type Options = {
   enableIpv6?: boolean;
 };
-
-// needed to support cli
-const wgExecutable =
-  typeof WG_ENV !== 'undefined' ? WG_ENV.WG_EXECUTABLE : 'dev';
 
 export const wg = {
   generateServerPeer: (
@@ -58,32 +53,28 @@ AllowedIPs = ${allowedIps.join(', ')}${extraLines.length ? `\n${extraLines.join(
       `${ipv4Addr}/${cidr4.prefix}` +
       (enableIpv6 ? `, ${ipv6Addr}/${cidr6.prefix}` : '');
 
-    let awgLines: string[] = [];
+    const parameters = {
+      Jc: wgInterface.jC,
+      Jmin: wgInterface.jMin,
+      Jmax: wgInterface.jMax,
+      S1: wgInterface.s1,
+      S2: wgInterface.s2,
+      S3: wgInterface.s3,
+      S4: wgInterface.s4,
+      H1: wgInterface.h1,
+      H2: wgInterface.h2,
+      H3: wgInterface.h3,
+      H4: wgInterface.h4,
+      I1: wgInterface.i1,
+      I2: wgInterface.i2,
+      I3: wgInterface.i3,
+      I4: wgInterface.i4,
+      I5: wgInterface.i5,
+    } as const;
 
-    if (wgExecutable === 'awg') {
-      const parameters = {
-        Jc: wgInterface.jC,
-        Jmin: wgInterface.jMin,
-        Jmax: wgInterface.jMax,
-        S1: wgInterface.s1,
-        S2: wgInterface.s2,
-        S3: wgInterface.s3,
-        S4: wgInterface.s4,
-        H1: wgInterface.h1,
-        H2: wgInterface.h2,
-        H3: wgInterface.h3,
-        H4: wgInterface.h4,
-        I1: wgInterface.i1,
-        I2: wgInterface.i2,
-        I3: wgInterface.i3,
-        I4: wgInterface.i4,
-        I5: wgInterface.i5,
-      } as const;
-
-      awgLines = Object.entries(parameters)
-        .filter(([_, value]) => !!value)
-        .map(([key, value]) => `${key} = ${value}`);
-    }
+    const awgLines = Object.entries(parameters)
+      .filter(([_, value]) => !!value)
+      .map(([key, value]) => `${key} = ${value}`);
 
     const extraLines = [...awgLines].filter((v) => v !== null);
 
@@ -127,32 +118,28 @@ PostDown = ${iptablesTemplate(hooks.postDown, wgInterface)}`;
     const dnsLine =
       dnsServers.length > 0 ? `DNS = ${dnsServers.join(', ')}` : null;
 
-    let awgLines: string[] = [];
+    const parameters = {
+      Jc: client.jC,
+      Jmin: client.jMin,
+      Jmax: client.jMax,
+      S1: wgInterface.s1,
+      S2: wgInterface.s2,
+      S3: wgInterface.s3,
+      S4: wgInterface.s4,
+      H1: wgInterface.h1,
+      H2: wgInterface.h2,
+      H3: wgInterface.h3,
+      H4: wgInterface.h4,
+      I1: client.i1,
+      I2: client.i2,
+      I3: client.i3,
+      I4: client.i4,
+      I5: client.i5,
+    } as const;
 
-    if (wgExecutable === 'awg') {
-      const parameters = {
-        Jc: client.jC,
-        Jmin: client.jMin,
-        Jmax: client.jMax,
-        S1: wgInterface.s1,
-        S2: wgInterface.s2,
-        S3: wgInterface.s3,
-        S4: wgInterface.s4,
-        H1: wgInterface.h1,
-        H2: wgInterface.h2,
-        H3: wgInterface.h3,
-        H4: wgInterface.h4,
-        I1: client.i1,
-        I2: client.i2,
-        I3: client.i3,
-        I4: client.i4,
-        I5: client.i5,
-      } as const;
-
-      awgLines = Object.entries(parameters)
-        .filter(([_, value]) => !!value)
-        .map(([key, value]) => `${key} = ${value}`);
-    }
+    const awgLines = Object.entries(parameters)
+      .filter(([_, value]) => !!value)
+      .map(([key, value]) => `${key} = ${value}`);
 
     const extraLines = [dnsLine, ...hookLines, ...awgLines].filter(
       (v) => v !== null
@@ -172,45 +159,46 @@ Endpoint = ${userConfig.host}:${userConfig.port}`;
   },
 
   generatePrivateKey: () => {
-    return exec(`${wgExecutable} genkey`);
+    return exec('awg genkey');
   },
 
   getPublicKey: (privateKey: string) => {
-    return exec(`echo ${privateKey} | ${wgExecutable} pubkey`, {
-      log: `echo ***hidden*** | ${wgExecutable} pubkey`,
+    return exec(`echo ${privateKey} | awg pubkey`, {
+      log: `echo ***hidden*** | awg pubkey`,
     });
   },
 
   generatePreSharedKey: () => {
-    return exec(`${wgExecutable} genpsk`);
+    return exec('awg genpsk');
   },
 
   up: (infName: string) => {
-    return exec(`${wgExecutable}-quick up ${infName}`);
+    return exec(`awg-quick up ${infName}`);
   },
 
   down: (infName: string) => {
-    return exec(`${wgExecutable}-quick down ${infName}`);
+    return exec(`awg-quick down ${infName}`);
   },
 
   restart: (infName: string) => {
     return exec(
-      `${wgExecutable}-quick down ${infName}; ${wgExecutable}-quick up ${infName}`
+      `awg-quick down ${infName}; awg-quick up ${infName}`
     );
   },
 
   sync: (infName: string) => {
     return exec(
-      `${wgExecutable} syncconf ${infName} <(${wgExecutable}-quick strip ${infName})`
+      `awg syncconf ${infName} <(awg-quick strip ${infName})`
     );
   },
 
   dump: async (infName: string) => {
-    const rawDump = await exec(`${wgExecutable} show ${infName} dump`, {
+    const rawDump = await exec(`awg show ${infName} dump`, {
       log: false,
     });
 
     type wgDumpLine = [
+      string,
       string,
       string,
       string,
@@ -254,3 +242,4 @@ Endpoint = ${userConfig.host}:${userConfig.port}`;
       });
   },
 };
+

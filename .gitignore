@@ -1,3 +1,65 @@
+# OS / System Files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 *.swp
-node_modules
+*.swo
+*~
+
+# Node / Package Managers
+node_modules/
+.pnpm-store/
+.pnpm-debug.log*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Nuxt / Nitro / Vite build outputs
+.output/
+.nuxt/
+.nitro/
+.cache/
+.data/
+dist/
+
+# Logs
+logs/
+*.log
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Local Database & Data
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite-journal
+*.sqlite-wal
+*.sqlite-shm
+wg-easy.db
+data/
+temp/
+temp1/
+
+# Test coverage
+coverage/
+.nyc_output/
+*.lcov
+
+# IDEs & Editors
+.idea/
+.fleet/
+*.sublime-project
+*.sublime-workspace
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json

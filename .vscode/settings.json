@@ -29,5 +29,6 @@
   "editor.gotoLocation.multipleDefinitions": "goto",
   "[toml]": {
     "editor.defaultFormatter": "tamasfe.even-better-toml"
-  }
+  },
+  "git.ignoreLimitWarning": true
 }

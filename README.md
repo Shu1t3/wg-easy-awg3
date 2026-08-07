@@ -1,6 +1,6 @@
-# WireGuard Easy (Playground)
+# AmneziaWG Easy (Playground)
 
-Experimental playground / development environment for WireGuard Easy Web UI & Server.
+Web UI & Server with native AmneziaWG 2.0 (AWG) support.
 
 ## Development
 

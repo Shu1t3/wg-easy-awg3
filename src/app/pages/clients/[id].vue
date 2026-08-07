@@ -90,7 +90,7 @@
               :label="$t('general.persistentKeepalive')"
             />
           </FormGroup>
-          <FormGroup v-if="globalStore.information?.isAwg">
+          <FormGroup>
             <FormHeading>{{ $t('awg.obfuscationParameters') }}</FormHeading>
 
             <FormNullNumberField
