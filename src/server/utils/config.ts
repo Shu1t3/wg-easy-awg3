@@ -69,6 +69,9 @@ export const WG_INITIAL_ENV = {
   PORT: process.env.INIT_PORT
     ? Number.parseInt(process.env.INIT_PORT, 10)
     : undefined,
+  MTU: process.env.INIT_MTU
+    ? Number.parseInt(process.env.INIT_MTU, 10)
+    : undefined,
 };
 
 function assertEnv<T extends string>(env: T) {

@@ -10,6 +10,11 @@ Use the included `server-check.sh` script to verify kernel modules, install the 
 # Diagnostic check only
 ./server-check.sh --check
 
+# Measure Path MTU & calculate optimal MTU for WireGuard and AmneziaWG
+./check-mtu.sh
+# Or apply directly to docker-compose.yml:
+./check-mtu.sh --apply
+
 # Install AmneziaWG kernel module (supports Ubuntu, Debian, RHEL/CentOS, Fedora, Arch, Alpine)
 sudo ./server-check.sh --install-module
 
@@ -82,6 +87,7 @@ A dedicated **Nginx Proxy Manager** service is included in `docker-compose.yml` 
 | `INIT_IPV4_CIDR` | `10.8.0.0/24` | VPN IPv4 subnet |
 | `INIT_IPV6_CIDR` | `fdcc:ad94:bacf:61a3::/64` | VPN IPv6 subnet |
 | `INIT_ALLOWED_IPS` | `0.0.0.0/0, ::/0` | Allowed IPs for full tunnel clients |
+| `INIT_MTU` | `1420` | MTU for WireGuard interface & client configs (run `./check-mtu.sh`) |
 | `DISABLE_PASSWORD_AUTH` | `false` | Disable local password login (for OAuth only) |
 | `OAUTH_PROVIDERS` | - | Comma-separated: `google,github,oidc` |
 | `OAUTH_ALLOWED_DOMAINS`| - | Allowed email domains (e.g. `example.com`) |

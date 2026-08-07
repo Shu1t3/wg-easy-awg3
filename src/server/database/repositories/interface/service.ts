@@ -66,6 +66,14 @@ export class InterfaceService {
       .execute();
   }
 
+  updateMtu(mtu: number) {
+    return this.#db
+      .update(wgInterface)
+      .set({ mtu })
+      .where(eq(wgInterface.name, 'wg0'))
+      .execute();
+  }
+
   setFirewallEnabled(firewallEnabled: boolean) {
     return this.#statements.setFirewallEnabled.execute({
       interface: 'wg0',

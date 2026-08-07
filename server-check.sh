@@ -76,6 +76,7 @@ show_help() {
   echo "  --restart          Перезапустить контейнеры проекта"
   echo "  --rebuild          Подтянуть/пересобрать образ и запустить проект"
   echo "  --health           Проверить статус контейнера, интерфейса awg и доступность Web UI"
+  echo "  --mtu              Выполнить замер Path MTU и рассчитать оптимальный MTU для WireGuard / AWG"
   echo "  --npm              Проверить статус и настройки Nginx Proxy Manager (SSL / Reverse Proxy)"
   echo "  --start-npm        Запустить / развернуть Nginx Proxy Manager (порт 81)"
   echo "  --logs             Показать последние логи контейнера в реальном времени"
@@ -705,6 +706,14 @@ main() {
 
     --health)
       check_health
+      ;;
+
+    --mtu|--check-mtu)
+      if [ -x "${SCRIPT_DIR}/check-mtu.sh" ]; then
+        "${SCRIPT_DIR}/check-mtu.sh" "${@:2}"
+      else
+        bash "${SCRIPT_DIR}/check-mtu.sh" "${@:2}"
+      fi
       ;;
 
     --logs)

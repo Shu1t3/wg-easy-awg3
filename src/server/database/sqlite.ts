@@ -103,6 +103,14 @@ async function initialSetup(db: DBServiceType) {
     });
   }
 
+  if (WG_INITIAL_ENV.MTU) {
+    DB_DEBUG('Setting initial MTU...');
+    await db.userConfigs.update({
+      defaultMtu: WG_INITIAL_ENV.MTU,
+    });
+    await db.interfaces.updateMtu(WG_INITIAL_ENV.MTU);
+  }
+
   if (
     WG_INITIAL_ENV.USERNAME &&
     WG_INITIAL_ENV.PASSWORD &&
