@@ -1,0 +1,227 @@
+process.env.PORT = '51821';
+
+import { describe, expect, test } from 'vitest';
+import { wg } from '#server/utils/wgHelper';
+import {
+  HSchema,
+  ISchema,
+  JcSchema,
+  JminSchema,
+  JmaxSchema,
+  SSchema,
+} from '#server/utils/types';
+import type { InterfaceType } from '#db/repositories/interface/types';
+import type { ClientType } from '#db/repositories/client/types';
+import type { UserConfigType } from '#db/repositories/userConfig/types';
+import type { HooksType } from '#db/repositories/hooks/types';
+
+describe('AWG 3.0 Configuration Generation', () => {
+  const baseInterface: InterfaceType = {
+    name: 'wg0',
+    device: 'wg0',
+    port: 51820,
+    privateKey: 'serverPrivateKey==',
+    publicKey: 'serverPublicKey==',
+    ipv4Cidr: '10.8.0.0/24',
+    ipv6Cidr: 'fdcc:ad94:bacf:61a3::/64',
+    mtu: 1420,
+    routingTable: 'auto',
+    jC: 7,
+    jMin: 10,
+    jMax: 1000,
+    s1: 128,
+    s2: 56,
+    s3: 100,
+    s4: 200,
+    h1: '123456-123500',
+    h2: '234567',
+    h3: '345678',
+    h4: '456789',
+    i1: '<b 0x01020304><t>',
+    i2: '<r 32>',
+    i3: null,
+    i4: null,
+    i5: null,
+    enabled: true,
+    firewallEnabled: false,
+    createdAt: '2026-01-01 00:00:00',
+    updatedAt: '2026-01-01 00:00:00',
+  };
+
+  const baseHooks: HooksType = {
+    id: 'wg0',
+    preUp: '',
+    postUp: '',
+    preDown: '',
+    postDown: '',
+    createdAt: '2026-01-01 00:00:00',
+    updatedAt: '2026-01-01 00:00:00',
+  };
+
+  const baseUserConfig: UserConfigType = {
+    id: 'wg0',
+    host: 'vpn.example.com',
+    port: 51820,
+    defaultDns: ['1.1.1.1', '8.8.8.8'],
+    defaultAllowedIps: ['0.0.0.0/0', '::/0'],
+    defaultMtu: 1420,
+    defaultPersistentKeepalive: 25,
+    createdAt: '2026-01-01 00:00:00',
+    updatedAt: '2026-01-01 00:00:00',
+  };
+
+  const baseClient: ClientType = {
+    id: 1,
+    userId: 1,
+    interfaceId: 'wg0',
+    name: 'test-awg3-client',
+    ipv4Address: '10.8.0.2',
+    ipv6Address: 'fdcc:ad94:bacf:61a3::2',
+    preUp: '',
+    postUp: '',
+    preDown: '',
+    postDown: '',
+    privateKey: 'clientPrivateKey==',
+    publicKey: 'clientPublicKey==',
+    preSharedKey: 'clientPreSharedKey==',
+    expiresAt: null,
+    allowedIps: null,
+    serverAllowedIps: [],
+    firewallIps: null,
+    persistentKeepalive: 25,
+    mtu: 1420,
+    jC: 8,
+    jMin: 20,
+    jMax: 800,
+    i1: '<b 0x05060708>',
+    i2: null,
+    i3: null,
+    i4: null,
+    i5: null,
+    dns: null,
+    serverEndpoint: null,
+    enabled: true,
+    createdAt: '2026-01-01 00:00:00',
+    updatedAt: '2026-01-01 00:00:00',
+  };
+
+  test('generateServerInterface includes all AWG 3.0 parameters', () => {
+    const config = wg.generateServerInterface(baseInterface, baseHooks, {
+      enableIpv6: true,
+    });
+
+    expect(config).toContain('PrivateKey = serverPrivateKey==');
+    expect(config).toContain('ListenPort = 51820');
+    expect(config).toContain('MTU = 1420');
+    expect(config).toContain('Jc = 7');
+    expect(config).toContain('Jmin = 10');
+    expect(config).toContain('Jmax = 1000');
+    expect(config).toContain('S1 = 128');
+    expect(config).toContain('S2 = 56');
+    expect(config).toContain('S3 = 100');
+    expect(config).toContain('S4 = 200');
+    expect(config).toContain('H1 = 123456-123500');
+    expect(config).toContain('H2 = 234567');
+    expect(config).toContain('H3 = 345678');
+    expect(config).toContain('H4 = 456789');
+    expect(config).toContain('I1 = <b 0x01020304><t>');
+    expect(config).toContain('I2 = <r 32>');
+    expect(config).not.toContain('I3 =');
+  });
+
+  test('generateClientConfig inherits server S1-S4 and H1-H4 and includes client Jc and I1', () => {
+    const config = wg.generateClientConfig(
+      baseInterface,
+      baseUserConfig,
+      baseClient,
+      { enableIpv6: true }
+    );
+
+    expect(config).toContain('PrivateKey = clientPrivateKey==');
+    expect(config).toContain('Address = 10.8.0.2/32, fdcc:ad94:bacf:61a3::2/128');
+    expect(config).toContain('DNS = 1.1.1.1, 8.8.8.8');
+    expect(config).toContain('Jc = 8');
+    expect(config).toContain('Jmin = 20');
+    expect(config).toContain('Jmax = 800');
+    expect(config).toContain('S1 = 128');
+    expect(config).toContain('S2 = 56');
+    expect(config).toContain('S3 = 100');
+    expect(config).toContain('S4 = 200');
+    expect(config).toContain('H1 = 123456-123500');
+    expect(config).toContain('H2 = 234567');
+    expect(config).toContain('H3 = 345678');
+    expect(config).toContain('H4 = 456789');
+    expect(config).toContain('I1 = <b 0x05060708>');
+    expect(config).not.toContain('I2 =');
+    expect(config).toContain('PublicKey = serverPublicKey==');
+    expect(config).toContain('Endpoint = vpn.example.com:51820');
+  });
+
+  test('generates clean configuration when AWG parameters are null', () => {
+    const cleanInterface: InterfaceType = {
+      ...baseInterface,
+      jC: null,
+      jMin: null,
+      jMax: null,
+      s1: null,
+      s2: null,
+      s3: null,
+      s4: null,
+      h1: null,
+      h2: null,
+      h3: null,
+      h4: null,
+      i1: null,
+      i2: null,
+      i3: null,
+      i4: null,
+      i5: null,
+    };
+
+    const config = wg.generateServerInterface(cleanInterface, baseHooks);
+
+    expect(config).not.toContain('Jc =');
+    expect(config).not.toContain('S1 =');
+    expect(config).not.toContain('H1 =');
+    expect(config).not.toContain('I1 =');
+    expect(config).toContain('PrivateKey = serverPrivateKey==');
+  });
+});
+
+describe('AWG 3.0 Zod Schema Validation', () => {
+  test('HSchema validates single numbers and range formats', () => {
+    expect(HSchema.parse('123456')).toBe('123456');
+    expect(HSchema.parse(' 100000 - 200000 ')).toBe('100000-200000');
+    expect(HSchema.parse('1000-1000')).toBe('1000');
+    expect(HSchema.parse(null)).toBeNull();
+    expect(HSchema.parse('')).toBeNull();
+
+    expect(() => HSchema.parse('2000-1000')).toThrow();
+    expect(() => HSchema.parse('4')).toThrow(); // Below H_MIN (5)
+    expect(() => HSchema.parse('invalid')).toThrow();
+  });
+
+  test('ISchema validates CPS format and null conversion', () => {
+    expect(ISchema.parse('<b 0x01020304><t>')).toBe('<b 0x01020304><t>');
+    expect(ISchema.parse('<r 32>')).toBe('<r 32>');
+    expect(ISchema.parse('<b 0x00><r 64><t>')).toBe('<b 0x00><r 64><t>');
+    expect(ISchema.parse(null)).toBeNull();
+    expect(ISchema.parse('')).toBeNull();
+    expect(ISchema.parse('   ')).toBeNull();
+
+    expect(() => ISchema.parse('constructor')).toThrow();
+    expect(() => ISchema.parse('plain invalid text without tags')).toThrow();
+  });
+
+  test('Jc, Jmin, Jmax, and S schemas validate limits', () => {
+    expect(JcSchema.parse(7)).toBe(7);
+    expect(JcSchema.parse(null)).toBeNull();
+    expect(() => JcSchema.parse(0)).toThrow(); // min 1
+    expect(() => JcSchema.parse(200)).toThrow(); // max 128
+
+    expect(JminSchema.parse(10)).toBe(10);
+    expect(JmaxSchema.parse(1000)).toBe(1000);
+    expect(SSchema.parse(128)).toBe(128);
+    expect(() => SSchema.parse(2000)).toThrow(); // max 1132
+  });
+});

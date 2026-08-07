@@ -197,7 +197,7 @@ class WireGuard {
       wgInterface.h3 = String(h3)!;
       wgInterface.h4 = String(h4)!;
 
-      Database.interfaces.update(wgInterface);
+      await Database.interfaces.update(wgInterface);
     }
 
     WG_DEBUG(`Starting Wireguard Interface ${wgInterface.name}...`);

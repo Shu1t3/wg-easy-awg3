@@ -306,6 +306,22 @@
     "i5Label": "Special junk packet 5 (I5)",
     "i5Description": "Protocol mimic packet in hex format: <b 0x...>",
     "mtuNote": "Values depend on the MTU",
-    "obfuscationParameters": "AmneziaWG Obfuscation Parameters"
+    "obfuscationParameters": "AmneziaWG Obfuscation Parameters",
+    "presetTitle": "AmneziaWG Obfuscation Presets",
+    "presetDescription": "Choose a pre-configured obfuscation profile for evading DPI detection or reset to default.",
+    "selectPreset": "Apply Obfuscation Preset",
+    "applyPreset": "Apply Preset",
+    "presets": {
+      "dnsTitle": "DNS Query Mimic",
+      "dnsDesc": "Simulates standard DNS-over-UDP query traffic with minimal packet sizes and lightweight CPS signature.",
+      "quicTitle": "QUIC / HTTP/3 Handshake Mimic",
+      "quicDesc": "Simulates modern QUIC connection opening packets with larger padding (S1-S4) and randomized payload.",
+      "stunTitle": "STUN Binding Request Mimic",
+      "stunDesc": "Simulates WebRTC/VoIP STUN discovery packets to bypass strict enterprise firewalls.",
+      "standardTitle": "Standard AWG 3.0 (Dynamic Random Headers)",
+      "standardDesc": "Default AmneziaWG obfuscation with randomized handshake headers and standard packet padding.",
+      "cleanTitle": "Standard WireGuard (Disable Obfuscation)",
+      "cleanDesc": "Clears all obfuscation parameters for maximum performance on trusted or unrestricted networks."
+    }
   }
 }

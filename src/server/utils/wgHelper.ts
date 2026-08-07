@@ -73,7 +73,9 @@ AllowedIPs = ${allowedIps.join(', ')}${extraLines.length ? `\n${extraLines.join(
     } as const;
 
     const awgLines = Object.entries(parameters)
-      .filter(([_, value]) => !!value)
+      .filter(
+        ([_, value]) => value !== null && value !== undefined && value !== ''
+      )
       .map(([key, value]) => `${key} = ${value}`);
 
     const extraLines = [...awgLines].filter((v) => v !== null);
@@ -138,7 +140,9 @@ PostDown = ${iptablesTemplate(hooks.postDown, wgInterface)}`;
     } as const;
 
     const awgLines = Object.entries(parameters)
-      .filter(([_, value]) => !!value)
+      .filter(
+        ([_, value]) => value !== null && value !== undefined && value !== ''
+      )
       .map(([key, value]) => `${key} = ${value}`);
 
     const extraLines = [dnsLine, ...hookLines, ...awgLines].filter(

@@ -155,6 +155,16 @@
             as="span"
           />
         </AdminCidrDialog>
+        <AdminAwgPresetDialog
+          trigger-class="col-span-2"
+          @apply="applyAwgPreset"
+        >
+          <FormSecondaryActionField
+            :label="$t('awg.selectPreset')"
+            class="inline-block w-full"
+            as="span"
+          />
+        </AdminAwgPresetDialog>
         <AdminRestartInterfaceDialog
           trigger-class="col-span-2"
           @restart="restartInterface"
@@ -180,6 +190,15 @@ const { data: _data, refresh } = await useFetch(`/api/admin/interface`, {
 });
 
 const data = toRef(_data.value);
+
+function applyAwgPreset(presetValues: Record<string, any>) {
+  if (!data.value) return;
+  for (const [key, value] of Object.entries(presetValues)) {
+    if (key in data.value) {
+      (data.value as any)[key] = value;
+    }
+  }
+}
 
 const _submit = useSubmit(
   (data) =>

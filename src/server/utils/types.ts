@@ -54,7 +54,7 @@ export const HSchema = z
   .transform((v) => v.replace(/\s+/g, ''))
   .refine(
     (v) => {
-      if (!v) return false;
+      if (!v) return true;
 
       if (!/^\d+(-\d+)?$/.test(v)) return false;
 
@@ -65,14 +65,13 @@ export const HSchema = z
 
       const [min, max] = v.split('-').map(Number);
       return min && max && min >= H_MIN && max <= H_MAX && min <= max;
-
-      return false;
     },
     {
       message: t('zod.generic.validNumberRange'),
     }
   )
   .transform((v) => {
+    if (!v) return null;
     if (!v.includes('-')) return `${Number(v)}`;
 
     const [min, max] = v.split('-').map(Number);
@@ -80,10 +79,23 @@ export const HSchema = z
   })
   .nullable();
 
+export function isValidCpsSignature(sig: string | null): boolean {
+  if (!sig || sig.trim() === '') return true;
+  const trimmed = sig.trim();
+  // Validates CPS tag syntax: sequences of <b 0xHEX...>, <r N>, <t>
+  const tagRegex =
+    /^(\s*<(\s*b\s+(0x)?[0-9a-fA-F\s]+|\s*r\s+\d+|\s*t\s*)>\s*)+$/;
+  return tagRegex.test(trimmed);
+}
+
 export const ISchema = z
   .string()
   .pipe(safeStringRefine)
   .pipe(controlStringRefine)
+  .transform((v) => (v.trim() === '' ? null : v.trim()))
+  .refine((v) => isValidCpsSignature(v), {
+    message: t('zod.generic.validString'),
+  })
   .nullable();
 
 export const PortSchema = z
