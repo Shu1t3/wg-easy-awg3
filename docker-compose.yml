@@ -1,5 +1,7 @@
 volumes:
   etc_wireguard:
+  npm_data:
+  npm_letsencrypt:
 
 services:
   wg-easy:
@@ -111,6 +113,31 @@ services:
       wg:
         ipv4_address: 10.42.42.42
         ipv6_address: fdcc:ad94:bacf:61a3::2a
+
+  npm:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: nginx-proxy-manager
+    restart: unless-stopped
+    ports:
+      # Публичный порт HTTP (авторедирект на HTTPS и Let's Encrypt challenge)
+      - "80:80/tcp"
+      # Публичный порт HTTPS (SSL сертификаты Let's Encrypt)
+      - "443:443/tcp"
+      # Веб-интерфейс Nginx Proxy Manager (по умолчанию: admin@example.com / changeme)
+      - "81:81/tcp"
+    environment:
+      - DISABLE_IPV6=true
+    volumes:
+      - npm_data:/data
+      - npm_letsencrypt:/etc/letsencrypt
+    networks:
+      wg:
+        ipv4_address: 10.42.42.81
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 networks:
   wg:

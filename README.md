@@ -44,7 +44,24 @@ services:
 docker compose up -d
 ```
 
-3. Access the Web UI at `http://<YOUR_SERVER_IP>:51821` (or your domain).
+3. Access the Web UI at `http://<YOUR_SERVER_IP>:51821` (or via Nginx Proxy Manager with HTTPS).
+
+## HTTPS & SSL via Nginx Proxy Manager
+
+A dedicated **Nginx Proxy Manager** service is included in `docker-compose.yml` to provide automated Let's Encrypt SSL certificates, HTTP->HTTPS redirects, and domain management.
+
+1. Start Nginx Proxy Manager:
+```bash
+./server-check.sh --start-npm
+```
+2. Open Web Admin UI at `http://<YOUR_SERVER_IP>:81` (Default: `admin@example.com` / `changeme`).
+3. Add a Proxy Host:
+   * **Domain Names:** `vpn.yourdomain.com`
+   * **Scheme:** `http`
+   * **Forward Hostname / IP:** `wg-easy` (or `10.42.42.42`)
+   * **Forward Port:** `51821`
+   * **SSL Tab:** Select *Request a new SSL Certificate*, check *Force SSL* and *HTTP/2 Support*.
+
 
 ## Environment Variables Reference
 
@@ -83,9 +100,16 @@ pnpm dev
 pnpm cli:dev
 ```
 
-### Build Image
+### Build & Deploy Multi-Arch Image (linux/amd64, linux/arm64)
 ```shell
+# Build for all architectures (amd64, arm64) and push manifest list to Docker Hub
 ./build-and-push.sh
+
+# Build only for local architecture without pushing
+./build-and-push.sh --local
+
+# Build specific version tag
+./build-and-push.sh --tag v1.0.0
 ```
 
 ## License

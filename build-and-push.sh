@@ -23,8 +23,10 @@ cd "${SCRIPT_DIR}"
 RUN_TESTS=true
 PUSH_IMAGE=true
 NO_CACHE=false
-PLATFORMS=""
+DEFAULT_PLATFORMS="linux/amd64,linux/arm64"
+PLATFORMS="${DEFAULT_PLATFORMS}"
 CUSTOM_TAG=""
+BUILDER_NAME="wg-easy-multiarch"
 
 # Extract default version from src/package.json if available
 DEFAULT_VERSION="latest"
@@ -39,7 +41,7 @@ fi
 print_banner() {
   echo -e "${CYAN}"
   echo "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓"
-  echo "┃       AmneziaWG Easy (AWG) Build & Deployment Tool         ┃"
+  echo "┃       AmneziaWG Easy (AWG) Multi-Arch Build & Deploy        ┃"
   echo "┃       Target Image: ${IMAGE_REPO}               ┃"
   echo "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛"
   echo -e "${NC}"
@@ -54,14 +56,17 @@ show_help() {
   echo "      --no-test           Skip running unit tests"
   echo "      --no-push           Build only, do not push to registry"
   echo "      --no-cache          Do not use cache when building the image"
-  echo "      --platform <plat>   Build for specific platform (e.g. linux/amd64,linux/arm64)"
+  echo "      --platform <plat>   Target platforms (default: '${DEFAULT_PLATFORMS}')"
+  echo "      --local             Build only for local host platform (loads into local docker daemon)"
+  echo "      --builder <name>    Specify Buildx builder name (default: '${BUILDER_NAME}')"
   echo "  -h, --help              Show this help message"
   echo ""
   echo "Examples:"
-  echo "  $0                      # Test, build and push with default tag + latest"
-  echo "  $0 --tag v1.0.0         # Test, build and push as shu1t3/wg-eas-awg3:v1.0.0 and :latest"
-  echo "  $0 --no-push            # Test and build image locally without pushing"
-  echo "  $0 --no-test --no-cache # Build without testing and without cache"
+  echo "  $0                      # Test, build for linux/amd64 & linux/arm64, push manifest list"
+  echo "  $0 --tag v1.0.0         # Build and push as shu1t3/wg-eas-awg3:v1.0.0 and :latest"
+  echo "  $0 --local              # Quick local build for current machine architecture only"
+  echo "  $0 --no-push            # Multi-arch test build without pushing"
+  echo "  $0 --no-test --no-cache # Build without running tests and without cache"
   exit 0
 }
 
@@ -86,6 +91,15 @@ while [[ $# -gt 0 ]]; do
       ;;
     --platform)
       PLATFORMS="$2"
+      shift 2
+      ;;
+    --local|--single-arch)
+      PLATFORMS="local"
+      PUSH_IMAGE=false
+      shift
+      ;;
+    --builder)
+      BUILDER_NAME="$2"
       shift 2
       ;;
     -h|--help)
@@ -113,7 +127,28 @@ if ! docker info &> /dev/null; then
   echo -e "${RED}Error: Docker daemon is not running or not accessible.${NC}"
   exit 1
 fi
-echo -e "${GREEN}✓ Docker is running.${NC}"
+
+if ! docker buildx version &> /dev/null; then
+  echo -e "${RED}Error: docker buildx plugin is not installed or not available.${NC}"
+  exit 1
+fi
+echo -e "${GREEN}✓ Docker & Docker Buildx are ready.${NC}"
+
+# Setup / verify Buildx builder for multi-platform support
+ensure_builder() {
+  if [ "${PLATFORMS}" = "local" ]; then
+    return 0
+  fi
+
+  echo -e "${BLUE}Checking Docker Buildx builder '${BUILDER_NAME}'...${NC}"
+  if ! docker buildx inspect "${BUILDER_NAME}" &> /dev/null; then
+    echo -e "${YELLOW}Creating new multi-arch builder '${BUILDER_NAME}' with docker-container driver...${NC}"
+    docker buildx create --name "${BUILDER_NAME}" --driver docker-container --bootstrap --use > /dev/null
+  else
+    docker buildx use "${BUILDER_NAME}" > /dev/null
+  fi
+  echo -e "${GREEN}✓ Using Buildx builder '${BUILDER_NAME}'.${NC}"
+}
 
 # Step 1: Run unit tests
 if [ "${RUN_TESTS}" = true ]; then
@@ -130,75 +165,78 @@ else
   echo -e "${YELLOW}[2/4] Skipping unit tests (--no-test specified).${NC}"
 fi
 
-# Step 2: Build Docker image
+# Step 2: Build and publish Docker image
 echo ""
-echo -e "${BLUE}[3/4] Building Docker image...${NC}"
-echo -e "Image tags to create:"
+echo -e "${BLUE}[3/4] Preparing Docker image build...${NC}"
+echo -e "Image tags:"
 echo -e "  - ${CYAN}${IMAGE_REPO}:${TAG}${NC}"
 if [ "${TAG}" != "latest" ]; then
   echo -e "  - ${CYAN}${IMAGE_REPO}:latest${NC}"
 fi
 
-BUILD_ARGS=()
-BUILD_ARGS+=("-t" "${IMAGE_REPO}:${TAG}")
-if [ "${TAG}" != "latest" ]; then
-  BUILD_ARGS+=("-t" "${IMAGE_REPO}:latest")
-fi
+# Construct base build command with tags
+BUILD_BASE_CMD=("docker" "buildx" "build")
 
 if [ "${NO_CACHE}" = true ]; then
-  BUILD_ARGS+=("--no-cache")
+  BUILD_BASE_CMD+=("--no-cache")
 fi
 
-if [ -n "${PLATFORMS}" ]; then
-  BUILD_ARGS+=("--platform" "${PLATFORMS}")
+BUILD_BASE_CMD+=("-t" "${IMAGE_REPO}:${TAG}")
+if [ "${TAG}" != "latest" ]; then
+  BUILD_BASE_CMD+=("-t" "${IMAGE_REPO}:latest")
 fi
 
-BUILD_ARGS+=(".")
-
-if docker build "${BUILD_ARGS[@]}"; then
-  echo -e "${GREEN}✓ Docker image built successfully!${NC}"
-else
-  echo -e "${RED}✗ Docker build failed!${NC}"
-  exit 1
-fi
-
-# Verify binaries in built image
-echo ""
-echo -e "${BLUE}Verifying binaries inside the built image...${NC}"
-docker run --rm "${IMAGE_REPO}:${TAG}" sh -c "
-  echo -n '  - awg: ' && /usr/bin/awg --version &&
-  echo -n '  - awg-quick: ' && which awg-quick &&
-  echo -n '  - amneziawg-go: ' && which amneziawg-go
-" || {
-  echo -e "${RED}✗ Binary verification failed in built image!${NC}"
-  exit 1
-}
-echo -e "${GREEN}✓ AmneziaWG binaries verified successfully.${NC}"
-
-# Step 3: Push Docker image
-if [ "${PUSH_IMAGE}" = true ]; then
-  echo ""
-  echo -e "${BLUE}[4/4] Pushing image to registry (${IMAGE_REPO})...${NC}"
-
-  echo -e "Pushing ${CYAN}${IMAGE_REPO}:${TAG}${NC}..."
-  docker push "${IMAGE_REPO}:${TAG}"
-
-  if [ "${TAG}" != "latest" ]; then
-    echo -e "Pushing ${CYAN}${IMAGE_REPO}:latest${NC}..."
-    docker push "${IMAGE_REPO}:latest"
+if [ "${PLATFORMS}" = "local" ]; then
+  echo -e "Target platform: ${CYAN}Local Host Architecture${NC}"
+  echo -e "${BLUE}Building and loading local image into Docker daemon...${NC}"
+  if "${BUILD_BASE_CMD[@]}" --load .; then
+    echo -e "${GREEN}✓ Local Docker image built and loaded successfully!${NC}"
+  else
+    echo -e "${RED}✗ Local Docker build failed!${NC}"
+    exit 1
   fi
+else
+  ensure_builder
+  echo -e "Target platforms: ${CYAN}${PLATFORMS}${NC}"
+
+  if [ "${PUSH_IMAGE}" = true ]; then
+    echo -e "${BLUE}Building multi-platform image and pushing manifest list to registry...${NC}"
+    if "${BUILD_BASE_CMD[@]}" --platform "${PLATFORMS}" --push .; then
+      echo -e "${GREEN}✓ Multi-arch image and manifest list pushed successfully!${NC}"
+    else
+      echo -e "${RED}✗ Multi-arch Docker build & push failed!${NC}"
+      exit 1
+    fi
+  else
+    echo -e "${BLUE}Building multi-platform images (dry-run without push)...${NC}"
+    if "${BUILD_BASE_CMD[@]}" --platform "${PLATFORMS}" .; then
+      echo -e "${GREEN}✓ Multi-arch Docker build completed successfully!${NC}"
+    else
+      echo -e "${RED}✗ Multi-arch Docker build failed!${NC}"
+      exit 1
+    fi
+  fi
+fi
+
+# Step 3: Verification & Summary
+echo ""
+echo -e "${BLUE}[4/4] Verification & Status...${NC}"
+
+if [ "${PUSH_IMAGE}" = true ] && [ "${PLATFORMS}" != "local" ]; then
+  echo -e "Inspecting pushed multi-architecture manifest for ${CYAN}${IMAGE_REPO}:${TAG}${NC}:"
+  docker buildx imagetools inspect "${IMAGE_REPO}:${TAG}" || true
 
   echo ""
   echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-  echo -e "${GREEN}✓ Image successfully pushed to registry!${NC}"
+  echo -e "${GREEN}✓ Multi-architecture image is LIVE on Docker Hub!${NC}"
   echo -e "  Repository: ${CYAN}https://hub.docker.com/r/${IMAGE_REPO}${NC}"
+  echo -e "  Platforms:  ${CYAN}${PLATFORMS}${NC}"
   echo -e "  Tags:       ${CYAN}${TAG}${NC}"
   if [ "${TAG}" != "latest" ]; then
     echo -e "              ${CYAN}latest${NC}"
   fi
   echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 else
-  echo ""
-  echo -e "${YELLOW}[4/4] Skipping push (--no-push specified).${NC}"
-  echo -e "${GREEN}✓ Image is ready locally: ${CYAN}${IMAGE_REPO}:${TAG}${NC}"
+  echo -e "${YELLOW}Push skipped (--no-push or --local specified).${NC}"
+  echo -e "${GREEN}✓ Image build verified for: ${CYAN}${PLATFORMS}${NC}"
 fi

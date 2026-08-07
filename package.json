@@ -4,7 +4,9 @@
   "scripts": {
     "dev": "docker compose -f docker-compose.dev.yml up wg-easy --build",
     "cli:dev": "docker compose -f docker-compose.dev.yml run --build --rm -it wg-easy cli:dev",
-    "build": "docker build -t wg-easy .",
+    "build": "bash ./build-and-push.sh --local --no-test",
+    "build:multiarch": "bash ./build-and-push.sh",
+    "build:push": "bash ./build-and-push.sh",
     "server:check": "bash ./server-check.sh --check",
     "server:health": "bash ./server-check.sh --health",
     "server:start": "bash ./server-check.sh --start",

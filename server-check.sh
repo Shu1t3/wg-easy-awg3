@@ -76,6 +76,8 @@ show_help() {
   echo "  --restart          Перезапустить контейнеры проекта"
   echo "  --rebuild          Подтянуть/пересобрать образ и запустить проект"
   echo "  --health           Проверить статус контейнера, интерфейса awg и доступность Web UI"
+  echo "  --npm              Проверить статус и настройки Nginx Proxy Manager (SSL / Reverse Proxy)"
+  echo "  --start-npm        Запустить / развернуть Nginx Proxy Manager (порт 81)"
   echo "  --logs             Показать последние логи контейнера в реальном времени"
   echo "  --fix-sysctl       Применить и сохранить рекомендуемые sysctl параметры форвардинга на хосте"
   echo "  -h, --help         Показать эту справку"
@@ -83,6 +85,7 @@ show_help() {
   echo -e "${BOLD}Примеры использования:${NC}"
   echo "  sudo $0                     # Полная настройка, проверка, запуск и чек здоровья"
   echo "  $0 --check                  # Только диагностика окружения"
+  echo "  $0 --npm                    # Проверка веб-панели Nginx Proxy Manager (:81) и SSL"
   echo "  sudo $0 --install-module    # Установка модуля ядра AmneziaWG на сервере"
   echo "  $0 --health                 # Чек здоровья запущенного контейнера и Web UI"
   echo "  $0 --logs                   # Просмотр логов контейнера"
@@ -513,11 +516,59 @@ show_logs() {
 }
 
 # ------------------------------------------------------------------------------
-# 6. Глубокий чек здоровья запущенного проекта (Health Check)
+# 6. Проверка Nginx Proxy Manager (Reverse Proxy / HTTPS SSL)
+# ------------------------------------------------------------------------------
+
+check_npm_status() {
+  log_section "Проверка Nginx Proxy Manager (SSL / Reverse Proxy)"
+
+  local npm_id
+  npm_id="$(docker ps -q -f "name=nginx-proxy-manager" | head -n 1)"
+
+  if [ -n "$npm_id" ]; then
+    log_success "Nginx Proxy Manager ${BOLD}ЗАПУЩЕН${NC} (Контейнер: ${npm_id:0:12})."
+    echo ""
+    echo -e "${GREEN}${BOLD}┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓${NC}"
+    echo -e "${GREEN}${BOLD}┃             ИНТЕРФЕЙС И ДОСТУП NGINX PROXY MANAGER                    ┃${NC}"
+    echo -e "${GREEN}${BOLD}┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫${NC}"
+    echo -e "${GREEN}┃ Веб-панель управления:  ${CYAN}http://<IP_СЕРВЕРА>:81${GREEN}                               ┃"
+    echo -e "${GREEN}┃ Логин по умолчанию:     ${CYAN}admin@example.com${GREEN}                                    ┃"
+    echo -e "${GREEN}┃ Пароль по умолчанию:    ${CYAN}changeme${GREEN}                                             ┃"
+    echo -e "${GREEN}┃ Публичный HTTP (порт):  ${CYAN}80/tcp (Let's Encrypt challenge & redirect)${GREEN}          ┃"
+    echo -e "${GREEN}┃ Публичный HTTPS (порт): ${CYAN}443/tcp (SSL/TLS трафик)${GREEN}                             ┃"
+    echo -e "${GREEN}${BOLD}┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫${NC}"
+    echo -e "${GREEN}┃ ${BOLD}Как подключить wg-easy в веб-панели NPM:${NC}${GREEN}                              ┃"
+    echo -e "${GREEN}┃ 1. Зайдите в Hosts -> Proxy Hosts -> Add Proxy Host                    ┃"
+    echo -e "${GREEN}┃ 2. Domain Names:        ${CYAN}ваш_домен (например, vpn.example.com)${GREEN}          ┃"
+    echo -e "${GREEN}┃ 3. Forward Scheme:      ${CYAN}http${GREEN}                                                 ┃"
+    echo -e "${GREEN}┃ 4. Forward Hostname/IP: ${CYAN}wg-easy${GREEN} (или 10.42.42.42)                            ┃"
+    echo -e "${GREEN}┃ 5. Forward Port:        ${CYAN}51821${GREEN}                                                ┃"
+    echo -e "${GREEN}┃ 6. Вкладка SSL:         ${CYAN}Request a new SSL Certificate (Let's Encrypt)${GREEN}        ┃"
+    echo -e "${GREEN}┃                         ${CYAN}Включите 'Force SSL' и 'HTTP/2 Support'${GREEN}              ┃"
+    echo -e "${GREEN}${BOLD}┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛${NC}"
+  else
+    log_warn "Контейнер 'nginx-proxy-manager' сейчас не запущен."
+    log_info "Для запуска Nginx Proxy Manager выполните: '${BOLD}$0 --start-npm${NC}'"
+  fi
+}
+
+start_npm() {
+  log_section "Запуск Nginx Proxy Manager"
+  local compose_cmd
+  compose_cmd="$(get_docker_compose_cmd)"
+  cd "${SCRIPT_DIR}"
+  log_info "Запуск контейнера nginx-proxy-manager..."
+  ${compose_cmd} up -d npm
+  sleep 3
+  check_npm_status
+}
+
+# ------------------------------------------------------------------------------
+# 7. Глубокий чек здоровья запущенного проекта (Health Check)
 # ------------------------------------------------------------------------------
 
 check_health() {
-  log_section "6. Проверка здоровья и статуса сервисов"
+  log_section "7. Проверка здоровья и статуса сервисов"
 
   # Поиск контейнера wg-easy
   local container_id
@@ -593,6 +644,13 @@ check_health() {
   echo -e "${GREEN}┃ Статус контейнера:  ${CYAN}Запущен (${container_id:0:12})${GREEN}                                ┃"
   echo -e "${GREEN}${BOLD}┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛${NC}"
 
+  # Также проверяем статус Nginx Proxy Manager, если он активен
+  local npm_check
+  npm_check="$(docker ps -q -f "name=nginx-proxy-manager" | head -n 1)"
+  if [ -n "$npm_check" ]; then
+    check_npm_status
+  fi
+
   return 0
 }
 
@@ -623,6 +681,14 @@ main() {
 
     --start)
       start_project
+      ;;
+
+    --npm|--npm-status)
+      check_npm_status
+      ;;
+
+    --start-npm)
+      start_npm
       ;;
 
     --stop)
