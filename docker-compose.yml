@@ -3,35 +3,114 @@ volumes:
 
 services:
   wg-easy:
-    #environment:
-    #  Optional:
-    #  - PORT=51821
-    #  - HOST=0.0.0.0
-    #  - INSECURE=false
-
-    image: ghcr.io/wg-easy/wg-easy:15
+    image: ${IMAGE_TAG:-shu1t3/wg-eas-awg3:latest}
     container_name: wg-easy
-    networks:
-      wg:
-        ipv4_address: 10.42.42.42
-        ipv6_address: fdcc:ad94:bacf:61a3::2a
-    volumes:
-      - etc_wireguard:/etc/wireguard
-      - /lib/modules:/lib/modules:ro
-    ports:
-      - "51820:51820/udp"
-      - "51821:51821/tcp"
     restart: unless-stopped
+
+    environment:
+      # ========================================================================
+      # Основные настройки Web UI и сервера
+      # ========================================================================
+      # Порт, на котором Web-интерфейс слушает запросы внутри контейнера (по умолчанию: 51821)
+      - PORT=51821
+      # Адрес привязки веб-сервера (по умолчанию: 0.0.0.0)
+      - HOST=0.0.0.0
+      # Установите 'true', если доступ к панели идет по HTTP или за reverse proxy (по умолчанию: false)
+      - INSECURE=false
+      # Установите 'true', чтобы отключить поддержку IPv6, если IPv6 не поддерживается хостом (по умолчанию: false)
+      - DISABLE_IPV6=false
+      # Установите 'true', чтобы отключить автопроверку обновлений (по умолчанию: false)
+      - DISABLE_VERSION_CHECK=false
+      # Пространства имен отладочных логов (доступно: Server,WireGuard,Database,CMD,Firewall)
+      - DEBUG=Server,WireGuard,Database,CMD,Firewall
+
+      # ========================================================================
+      # Начальная автонастройка (срабатывает при первом создании чистой базы данных)
+      # ========================================================================
+      # Установите 'true' для автоматического создания пользователя и параметров при первом старте
+      - INIT_ENABLED=false
+      # Публичный домен или IP-адрес сервера для клиентских конфигов (например: vpn.example.com или 203.0.113.1)
+      - INIT_HOST=
+      # UDP порт AmneziaWG, используемый клиентами для подключения (по умолчанию: 51820)
+      - INIT_PORT=51820
+      # Логин администратора по умолчанию для входа в панель
+      - INIT_USERNAME=admin
+      # Пароль администратора по умолчанию для входа в панель
+      - INIT_PASSWORD=
+      # Список DNS-серверов через запятую, передаваемый клиентам (по умолчанию: 1.1.1.1,8.8.8.8)
+      - INIT_DNS=1.1.1.1,8.8.8.8
+      # IPv4 подсеть VPN-сети (по умолчанию: 10.8.0.0/24)
+      - INIT_IPV4_CIDR=10.8.0.0/24
+      # IPv6 подсеть VPN-сети (по умолчанию: fdcc:ad94:bacf:61a3::/64)
+      - INIT_IPV6_CIDR=fdcc:ad94:bacf:61a3::/64
+      # Список AllowedIPs для клиентских конфигураций (по умолчанию: 0.0.0.0/0, ::/0 для полного туннеля)
+      - INIT_ALLOWED_IPS=0.0.0.0/0, ::/0
+
+      # ========================================================================
+      # Безопасность и авторизация
+      # ========================================================================
+      # Установите 'true', чтобы отключить вход по локальному паролю (требуется настроенный OAuth)
+      - DISABLE_PASSWORD_AUTH=false
+
+      # ========================================================================
+      # Авторизация OAuth 2.0 / OIDC (Опционально)
+      # ========================================================================
+      # Список включенных OAuth провайдеров через запятую: google,github,oidc
+      # - OAUTH_PROVIDERS=google,github,oidc
+      # Список разрешенных почтовых доменов через запятую (например: example.com,company.org)
+      # - OAUTH_ALLOWED_DOMAINS=example.com
+      # Автоматически регистрировать новых пользователей при успешном входе через OAuth (по умолчанию: false)
+      # - OAUTH_AUTO_REGISTER=false
+      # Автоматически перенаправлять страницу входа на конкретный OAuth провайдер (google, github, oidc)
+      # - OAUTH_AUTO_LAUNCH=
+
+      # --- Google OAuth ---
+      # - OAUTH_GOOGLE_CLIENT_ID=
+      # - OAUTH_GOOGLE_CLIENT_SECRET=
+
+      # --- GitHub OAuth ---
+      # - OAUTH_GITHUB_CLIENT_ID=
+      # - OAUTH_GITHUB_CLIENT_SECRET=
+
+      # --- Универсальный OIDC / Keycloak / Authentik ---
+      # - OAUTH_OIDC_NAME=Keycloak
+      # - OAUTH_OIDC_SERVER=https://auth.example.com/realms/master
+      # - OAUTH_OIDC_CLIENT_ID=
+      # - OAUTH_OIDC_CLIENT_SECRET=
+
+    volumes:
+      # Постоянное хранилище конфигураций и базы данных SQLite
+      - etc_wireguard:/etc/wireguard
+      # Доступ только для чтения к модулям ядра хоста для акселерации AmneziaWG / WireGuard
+      - /lib/modules:/lib/modules:ro
+
+    ports:
+      # UDP порт для VPN трафика AmneziaWG
+      - "51820:51820/udp"
+      # TCP порт для панели управления Web UI
+      - "51821:51821/tcp"
+
     cap_add:
       - NET_ADMIN
       - SYS_MODULE
-      # - NET_RAW # ⚠️ Uncomment if using Podman
+
     sysctls:
       - net.ipv4.ip_forward=1
       - net.ipv4.conf.all.src_valid_mark=1
       - net.ipv6.conf.all.disable_ipv6=0
       - net.ipv6.conf.all.forwarding=1
       - net.ipv6.conf.default.forwarding=1
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    networks:
+      wg:
+        ipv4_address: 10.42.42.42
+        ipv6_address: fdcc:ad94:bacf:61a3::2a
 
 networks:
   wg:
