@@ -37,26 +37,25 @@ export type UserConfigUpdateType = Omit<
 >;
 
 export const UserConfigUpdateSchema = schemaForType<UserConfigUpdateType>()(
-  z.object({
-    port: PortSchema,
-    defaultMtu: MtuSchema,
-    defaultPersistentKeepalive: PersistentKeepaliveSchema,
-    defaultDns: DnsSchema,
-    defaultAllowedIps: AllowedIpsSchema,
-    defaultJC: JcSchema,
-    defaultJMin: JminSchema,
-    defaultJMax: JmaxSchema,
-    defaultI1: ISchema,
-    defaultI2: ISchema,
-    defaultI3: ISchema,
-    defaultI4: ISchema,
-    defaultI5: ISchema,
-    host: host,
-  }).refine(
-    (data) => validateJMinMax(data.defaultJMin, data.defaultJMax),
-    {
+  z
+    .object({
+      port: PortSchema,
+      defaultMtu: MtuSchema,
+      defaultPersistentKeepalive: PersistentKeepaliveSchema,
+      defaultDns: DnsSchema,
+      defaultAllowedIps: AllowedIpsSchema,
+      defaultJC: JcSchema,
+      defaultJMin: JminSchema,
+      defaultJMax: JmaxSchema,
+      defaultI1: ISchema,
+      defaultI2: ISchema,
+      defaultI3: ISchema,
+      defaultI4: ISchema,
+      defaultI5: ISchema,
+      host: host,
+    })
+    .refine((data) => validateJMinMax(data.defaultJMin, data.defaultJMax), {
       message: t('zod.generic.validNumberRange'),
       path: ['defaultJMin'],
-    }
-  )
+    })
 );

@@ -119,7 +119,9 @@ PostDown = ${iptablesTemplate(hooks.postDown, wgInterface)}`;
 
     const dnsServers = client.dns ?? userConfig.defaultDns;
     const dnsLine =
-      dnsServers && dnsServers.length > 0 ? `DNS = ${dnsServers.join(', ')}` : null;
+      dnsServers && dnsServers.length > 0
+        ? `DNS = ${dnsServers.join(', ')}`
+        : null;
 
     const parameters = {
       Jc: client.jC,
@@ -208,15 +210,11 @@ ${peerLines.join('\n')}`;
   },
 
   restart: (infName: string) => {
-    return exec(
-      `awg-quick down ${infName}; awg-quick up ${infName}`
-    );
+    return exec(`awg-quick down ${infName}; awg-quick up ${infName}`);
   },
 
   sync: (infName: string) => {
-    return exec(
-      `awg syncconf ${infName} <(awg-quick strip ${infName})`
-    );
+    return exec(`awg syncconf ${infName} <(awg-quick strip ${infName})`);
   },
 
   dump: async (infName: string) => {
@@ -269,4 +267,3 @@ ${peerLines.join('\n')}`;
       });
   },
 };
-

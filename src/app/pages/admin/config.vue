@@ -34,7 +34,7 @@
       </FormGroup>
       <FormGroup>
         <FormHeading>{{ $t('form.sectionAdvanced') }}</FormHeading>
-        <FormNumberField
+        <FormMtuField
           id="defaultMtu"
           v-model="data.defaultMtu"
           :label="$t('general.mtu')"
@@ -112,8 +112,6 @@
 </template>
 
 <script lang="ts" setup>
-const globalStore = useGlobalStore();
-
 const { data: _data, refresh } = await useFetch(`/api/admin/userconfig`, {
   method: 'get',
 });

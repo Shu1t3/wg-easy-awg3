@@ -2,7 +2,7 @@
   <main v-if="data">
     <FormElement @submit.prevent="submit">
       <FormGroup>
-        <FormNumberField
+        <FormMtuField
           id="mtu"
           v-model="data.mtu"
           :label="$t('general.mtu')"
@@ -143,6 +143,17 @@
         <FormHeading>{{ $t('form.actions') }}</FormHeading>
         <FormPrimaryActionField type="submit" :label="$t('form.save')" />
         <FormSecondaryActionField :label="$t('form.revert')" @click="revert" />
+        <AdminMtuDialog
+          trigger-class="col-span-2"
+          :current-mtu="data.mtu"
+          @apply="data.mtu = $event"
+        >
+          <FormSecondaryActionField
+            :label="$t('admin.interface.measureMtu')"
+            class="inline-block w-full"
+            as="span"
+          />
+        </AdminMtuDialog>
         <FormSecondaryActionField
           :label="$t('awg.randomizeHeaders')"
           class="col-span-2"
@@ -212,11 +223,11 @@ function randomizeHHeaders() {
   data.value.h4 = ranges[3]!;
 }
 
-function applyAwgPreset(presetValues: Record<string, any>) {
+function applyAwgPreset(presetValues: Record<string, unknown>) {
   if (!data.value) return;
   for (const [key, value] of Object.entries(presetValues)) {
     if (key in data.value) {
-      (data.value as any)[key] = value;
+      (data.value as Record<string, unknown>)[key] = value;
     }
   }
 }

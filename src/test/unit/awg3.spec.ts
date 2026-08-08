@@ -1,6 +1,5 @@
-process.env.PORT = '51821';
-
 import { describe, expect, test } from 'vitest';
+
 import { wg } from '#server/utils/wgHelper';
 import {
   HSchema,
@@ -24,6 +23,8 @@ import {
   type UserConfigType,
 } from '#db/repositories/userConfig/types';
 import type { HooksType } from '#db/repositories/hooks/types';
+
+process.env.PORT = '51821';
 
 const baseInterface: InterfaceType = {
   name: 'wg0',
@@ -123,7 +124,6 @@ const baseClient: ClientType = {
 };
 
 describe('AWG 3.0 Configuration Generation', () => {
-
   test('generateServerInterface includes all AWG 3.0 parameters', () => {
     const config = wg.generateServerInterface(baseInterface, baseHooks, {
       enableIpv6: true,
@@ -157,7 +157,9 @@ describe('AWG 3.0 Configuration Generation', () => {
     );
 
     expect(config).toContain('PrivateKey = clientPrivateKey==');
-    expect(config).toContain('Address = 10.8.0.2/32, fdcc:ad94:bacf:61a3::2/128');
+    expect(config).toContain(
+      'Address = 10.8.0.2/32, fdcc:ad94:bacf:61a3::2/128'
+    );
     expect(config).toContain('DNS = 1.1.1.1, 8.8.8.8');
     expect(config).toContain('Jc = 8');
     expect(config).toContain('Jmin = 20');
@@ -261,7 +263,9 @@ describe('AWG 3.0 Configuration Generation', () => {
 
 describe('formatEndpoint utility', () => {
   test('formats domain and IPv4 correctly', () => {
-    expect(formatEndpoint('vpn.example.com', 51820)).toBe('vpn.example.com:51820');
+    expect(formatEndpoint('vpn.example.com', 51820)).toBe(
+      'vpn.example.com:51820'
+    );
     expect(formatEndpoint('192.168.1.1', 51820)).toBe('192.168.1.1:51820');
     expect(formatEndpoint('https://vpn.example.com/', 51820)).toBe(
       'vpn.example.com:51820'
@@ -503,4 +507,3 @@ describe('AWG 3.0 Zod Schema Validation', () => {
     expect(config).toContain('I5 = <b 0x11223344>');
   });
 });
-

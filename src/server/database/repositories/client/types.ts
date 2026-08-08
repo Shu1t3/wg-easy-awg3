@@ -88,38 +88,37 @@ export const ClientQuerySchema = z.object({
 export type ClientQueryType = z.infer<typeof ClientQuerySchema>;
 
 export const ClientUpdateSchema = schemaForType<UpdateClientType>()(
-  z.object({
-    name: name,
-    enabled: EnabledSchema,
-    expiresAt: expiresAt,
-    ipv4Address: address4,
-    ipv6Address: address6,
-    preUp: HookSchema,
-    postUp: HookSchema,
-    preDown: HookSchema,
-    postDown: HookSchema,
-    allowedIps: AllowedIpsSchema.nullable(),
-    serverAllowedIps: serverAllowedIps,
-    firewallIps: FirewallIpsSchema.nullable(),
-    mtu: MtuSchema,
-    jC: JcSchema,
-    jMin: JminSchema,
-    jMax: JmaxSchema,
-    i1: ISchema,
-    i2: ISchema,
-    i3: ISchema,
-    i4: ISchema,
-    i5: ISchema,
-    persistentKeepalive: PersistentKeepaliveSchema,
-    serverEndpoint: AddressSchema.nullable(),
-    dns: DnsSchema.nullable(),
-  }).refine(
-    (data) => validateJMinMax(data.jMin, data.jMax),
-    {
+  z
+    .object({
+      name: name,
+      enabled: EnabledSchema,
+      expiresAt: expiresAt,
+      ipv4Address: address4,
+      ipv6Address: address6,
+      preUp: HookSchema,
+      postUp: HookSchema,
+      preDown: HookSchema,
+      postDown: HookSchema,
+      allowedIps: AllowedIpsSchema.nullable(),
+      serverAllowedIps: serverAllowedIps,
+      firewallIps: FirewallIpsSchema.nullable(),
+      mtu: MtuSchema,
+      jC: JcSchema,
+      jMin: JminSchema,
+      jMax: JmaxSchema,
+      i1: ISchema,
+      i2: ISchema,
+      i3: ISchema,
+      i4: ISchema,
+      i5: ISchema,
+      persistentKeepalive: PersistentKeepaliveSchema,
+      serverEndpoint: AddressSchema.nullable(),
+      dns: DnsSchema.nullable(),
+    })
+    .refine((data) => validateJMinMax(data.jMin, data.jMax), {
       message: t('zod.generic.validNumberRange'),
       path: ['jMin'],
-    }
-  )
+    })
 );
 
 const clientId = z.coerce.number({ message: t('zod.client.id') });

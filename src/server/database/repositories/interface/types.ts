@@ -74,13 +74,10 @@ export const InterfaceUpdateSchema = schemaForType<InterfaceUpdateType>()(
       enabled: EnabledSchema,
       firewallEnabled: EnabledSchema,
     })
-    .refine(
-      (data) => validateJMinMax(data.jMin, data.jMax),
-      {
-        message: t('zod.generic.validNumberRange'),
-        path: ['jMin'],
-      }
-    )
+    .refine((data) => validateJMinMax(data.jMin, data.jMax), {
+      message: t('zod.generic.validNumberRange'),
+      path: ['jMin'],
+    })
     .refine(
       (data) => {
         const headers = [

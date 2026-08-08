@@ -63,7 +63,7 @@ show_help() {
   echo ""
   echo "Examples:"
   echo "  $0                      # Test, build for linux/amd64 & linux/arm64, push manifest list"
-  echo "  $0 --tag v1.0.0         # Build and push as shu1t3/wg-eas-awg3:v1.0.0 and :latest"
+  echo "  $0 --tag 15.4.0-shu1t3  # Build and push as shu1t3/wg-eas-awg3:15.4.0-shu1t3 and :latest"
   echo "  $0 --local              # Quick local build for current machine architecture only"
   echo "  $0 --no-push            # Multi-arch test build without pushing"
   echo "  $0 --no-test --no-cache # Build without running tests and without cache"
@@ -154,7 +154,7 @@ ensure_builder() {
 if [ "${RUN_TESTS}" = true ]; then
   echo ""
   echo -e "${BLUE}[2/4] Running unit tests in isolated Node container...${NC}"
-  if docker run --rm -v "${SCRIPT_DIR}:/app" -w /app/src node:22-alpine sh -c "corepack enable pnpm && pnpm install --frozen-lockfile && pnpm test"; then
+  if docker run --rm -v "${SCRIPT_DIR}:/app" -w /app/src node:22-alpine sh -c "npm install -g pnpm@11.19.0 --silent || corepack enable pnpm; pnpm install --frozen-lockfile && pnpm test"; then
     echo -e "${GREEN}✓ All unit tests passed successfully!${NC}"
   else
     echo -e "${RED}✗ Unit tests failed! Aborting build.${NC}"

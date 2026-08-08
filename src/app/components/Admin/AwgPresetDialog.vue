@@ -16,7 +16,7 @@
               'cursor-pointer rounded border p-3 transition',
               selectedPresetId === preset.id
                 ? 'border-red-800 bg-red-50 dark:border-red-600 dark:bg-neutral-700'
-                : 'border-gray-300 hover:border-gray-400 dark:border-neutral-600 dark:hover:border-neutral-500'
+                : 'border-gray-300 hover:border-gray-400 dark:border-neutral-600 dark:hover:border-neutral-500',
             ]"
             @click="selectedPresetId = preset.id"
           >
@@ -28,7 +28,7 @@
                 :checked="selectedPresetId === preset.id"
                 class="accent-red-800"
               />
-              <span class="font-medium text-sm text-gray-900 dark:text-white">
+              <span class="text-sm font-medium text-gray-900 dark:text-white">
                 {{ preset.title }}
               </span>
             </div>
@@ -68,7 +68,7 @@
 
 <script lang="ts" setup>
 const emit = defineEmits<{
-  (e: 'apply', values: Record<string, any>): void;
+  (e: 'apply', values: Record<string, unknown>): void;
 }>();
 
 const props = withDefaults(
@@ -77,6 +77,7 @@ const props = withDefaults(
     clientMode?: boolean;
   }>(),
   {
+    triggerClass: '',
     clientMode: false,
   }
 );

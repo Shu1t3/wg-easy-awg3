@@ -231,11 +231,11 @@ const { data: _data, refresh } = await useFetch(`/api/client/${id}`, {
 });
 const data = toRef(_data.value);
 
-function applyAwgPreset(presetValues: Record<string, any>) {
+function applyAwgPreset(presetValues: Record<string, unknown>) {
   if (!data.value) return;
   for (const [key, value] of Object.entries(presetValues)) {
     if (key in data.value) {
-      (data.value as any)[key] = value;
+      (data.value as Record<string, unknown>)[key] = value;
     }
   }
 }
