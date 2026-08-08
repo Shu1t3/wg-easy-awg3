@@ -3,6 +3,7 @@ import { stringifyIp } from 'ip-bigint';
 
 import { removeNewlines, iptablesTemplate } from '#server/utils/template';
 import { exec } from '#server/utils/cmd';
+import { formatEndpoint } from '#server/utils/types';
 import type { ClientType } from '#db/repositories/client/types';
 import type { InterfaceType } from '#db/repositories/interface/types';
 import type { UserConfigType } from '#db/repositories/userConfig/types';
@@ -118,7 +119,7 @@ PostDown = ${iptablesTemplate(hooks.postDown, wgInterface)}`;
 
     const dnsServers = client.dns ?? userConfig.defaultDns;
     const dnsLine =
-      dnsServers.length > 0 ? `DNS = ${dnsServers.join(', ')}` : null;
+      dnsServers && dnsServers.length > 0 ? `DNS = ${dnsServers.join(', ')}` : null;
 
     const parameters = {
       Jc: client.jC,
@@ -149,17 +150,39 @@ PostDown = ${iptablesTemplate(hooks.postDown, wgInterface)}`;
       (v) => v !== null
     );
 
+    const rawAllowedIps = client.allowedIps ?? userConfig.defaultAllowedIps;
+    const allowedIps = (rawAllowedIps ?? []).filter((ip) => {
+      if (!enableIpv6) {
+        return !ip.includes(':');
+      }
+      return true;
+    });
+
+    const peerLines = [
+      `PublicKey = ${wgInterface.publicKey}`,
+      `PresharedKey = ${client.preSharedKey}`,
+      `AllowedIPs = ${allowedIps.join(', ')}`,
+    ];
+
+    if (
+      client.persistentKeepalive !== null &&
+      client.persistentKeepalive !== undefined &&
+      client.persistentKeepalive > 0
+    ) {
+      peerLines.push(`PersistentKeepalive = ${client.persistentKeepalive}`);
+    }
+
+    peerLines.push(
+      `Endpoint = ${formatEndpoint(userConfig.host, userConfig.port)}`
+    );
+
     return `[Interface]
 PrivateKey = ${client.privateKey}
 Address = ${address}
 MTU = ${client.mtu}
 ${extraLines.length ? `${extraLines.join('\n')}\n` : ''}
 [Peer]
-PublicKey = ${wgInterface.publicKey}
-PresharedKey = ${client.preSharedKey}
-AllowedIPs = ${(client.allowedIps ?? userConfig.defaultAllowedIps).join(', ')}
-PersistentKeepalive = ${client.persistentKeepalive}
-Endpoint = ${userConfig.host}:${userConfig.port}`;
+${peerLines.join('\n')}`;
   },
 
   generatePrivateKey: () => {

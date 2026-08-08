@@ -20,6 +20,7 @@ import {
   safeStringRefine,
   schemaForType,
   t,
+  validateJMinMax,
 } from '#server/utils/types';
 
 export type InterfaceType = InferSelectModel<typeof wgInterface>;
@@ -73,6 +74,13 @@ export const InterfaceUpdateSchema = schemaForType<InterfaceUpdateType>()(
       enabled: EnabledSchema,
       firewallEnabled: EnabledSchema,
     })
+    .refine(
+      (data) => validateJMinMax(data.jMin, data.jMax),
+      {
+        message: t('zod.generic.validNumberRange'),
+        path: ['jMin'],
+      }
+    )
     .refine(
       (data) => {
         const headers = [

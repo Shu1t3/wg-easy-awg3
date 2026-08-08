@@ -37,6 +37,17 @@ export default definePermissionEventHandler(
     }
 
     await Database.interfaces.update(data);
+    await Database.userConfigs.update({
+      defaultJC: data.jC,
+      defaultJMin: data.jMin,
+      defaultJMax: data.jMax,
+      defaultI1: data.i1,
+      defaultI2: data.i2,
+      defaultI3: data.i3,
+      defaultI4: data.i4,
+      defaultI5: data.i5,
+      defaultMtu: data.mtu,
+    });
     await WireGuard.saveConfig();
     return { success: true };
   }

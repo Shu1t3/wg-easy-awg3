@@ -39,6 +39,13 @@ export default defineEventHandler(async (event) => {
     });
   }
 
+  if (!client.enabled) {
+    throw createError({
+      statusCode: 403,
+      statusMessage: 'Client is disabled',
+    });
+  }
+
   const config = await WireGuard.getClientConfiguration({
     clientId: client.id,
   });
@@ -49,6 +56,6 @@ export default defineEventHandler(async (event) => {
     'Content-Disposition',
     `attachment; filename="${WireGuard.cleanClientFilename(client.name) || client.id}.conf"`
   );
-  setHeader(event, 'Content-Type', 'application/octet-stream');
+  setHeader(event, 'Content-Type', 'text/plain; charset=utf-8');
   return config;
 });

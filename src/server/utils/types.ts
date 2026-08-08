@@ -40,11 +40,40 @@ export const MtuSchema = z
 
 export const JcSchema = z.number().min(1).max(128).nullable();
 
-export const JminSchema = z.number().max(1279).nullable();
+export const JminSchema = z.number().min(0).max(1279).nullable();
 
-export const JmaxSchema = z.number().max(1280).nullable();
+export const JmaxSchema = z.number().min(0).max(1280).nullable();
 
-export const SSchema = z.number().max(1132).nullable();
+export const SSchema = z.number().min(0).max(1132).nullable();
+
+export function validateJMinMax(
+  jMin?: number | null,
+  jMax?: number | null
+): boolean {
+  if (
+    jMin === null ||
+    jMin === undefined ||
+    jMax === null ||
+    jMax === undefined
+  ) {
+    return true;
+  }
+  return jMin <= jMax;
+}
+
+export function formatEndpoint(host: string, port: number): string {
+  const cleanHost = host
+    .trim()
+    .replace(/^https?:\/\//i, '')
+    .replace(/\/+$/, '');
+  if (/^\[.+\]$/.test(cleanHost)) {
+    return `${cleanHost}:${port}`;
+  }
+  if (isIP(cleanHost) && cleanHost.includes(':')) {
+    return `[${cleanHost}]:${port}`;
+  }
+  return `${cleanHost}:${port}`;
+}
 
 const H_MIN = 5;
 const H_MAX = 2 ** 32 - 1; // 4294967295 (Uint32 Max)

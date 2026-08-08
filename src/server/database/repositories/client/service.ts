@@ -185,6 +185,16 @@ export class ClientService {
       const ipv6Cidr = parseCidr(clientInterface.ipv6Cidr);
       const ipv6Address = nextIP(6, ipv6Cidr, clients);
 
+      const jC = clientConfig.defaultJC ?? clientInterface.jC;
+      const jMin = clientConfig.defaultJMin ?? clientInterface.jMin;
+      const jMax = clientConfig.defaultJMax ?? clientInterface.jMax;
+      const i1 = clientConfig.defaultI1 ?? clientInterface.i1;
+      const i2 = clientConfig.defaultI2 ?? clientInterface.i2;
+      const i3 = clientConfig.defaultI3 ?? clientInterface.i3;
+      const i4 = clientConfig.defaultI4 ?? clientInterface.i4;
+      const i5 = clientConfig.defaultI5 ?? clientInterface.i5;
+      const mtu = clientConfig.defaultMtu ?? clientInterface.mtu;
+
       return await tx
         .insert(client)
         .values({
@@ -198,15 +208,15 @@ export class ClientService {
           preSharedKey,
           ipv4Address,
           ipv6Address,
-          mtu: clientConfig.defaultMtu,
-          jC: clientConfig.defaultJC,
-          jMin: clientConfig.defaultJMin,
-          jMax: clientConfig.defaultJMax,
-          i1: clientConfig.defaultI1,
-          i2: clientConfig.defaultI2,
-          i3: clientConfig.defaultI3,
-          i4: clientConfig.defaultI4,
-          i5: clientConfig.defaultI5,
+          mtu,
+          jC,
+          jMin,
+          jMax,
+          i1,
+          i2,
+          i3,
+          i4,
+          i5,
           persistentKeepalive: clientConfig.defaultPersistentKeepalive,
           serverAllowedIps: [],
           enabled: true,
@@ -257,7 +267,18 @@ export class ClientService {
     privateKey,
     publicKey,
   }: ClientCreateFromExistingType) {
+    const clientInterface = await Database.interfaces.get();
     const clientConfig = await Database.userConfigs.get();
+
+    const jC = clientConfig.defaultJC ?? clientInterface.jC;
+    const jMin = clientConfig.defaultJMin ?? clientInterface.jMin;
+    const jMax = clientConfig.defaultJMax ?? clientInterface.jMax;
+    const i1 = clientConfig.defaultI1 ?? clientInterface.i1;
+    const i2 = clientConfig.defaultI2 ?? clientInterface.i2;
+    const i3 = clientConfig.defaultI3 ?? clientInterface.i3;
+    const i4 = clientConfig.defaultI4 ?? clientInterface.i4;
+    const i5 = clientConfig.defaultI5 ?? clientInterface.i5;
+    const mtu = clientConfig.defaultMtu ?? clientInterface.mtu;
 
     return this.#db
       .insert(client)
@@ -270,14 +291,15 @@ export class ClientService {
         preSharedKey,
         ipv4Address,
         ipv6Address,
-        mtu: clientConfig.defaultMtu,
-        jC: clientConfig.defaultJC,
-        jMin: clientConfig.defaultJMin,
-        jMax: clientConfig.defaultJMax,
-        i1: clientConfig.defaultI1,
-        i2: clientConfig.defaultI2,
-        i3: clientConfig.defaultI3,
-        i4: clientConfig.defaultI4,
+        mtu,
+        jC,
+        jMin,
+        jMax,
+        i1,
+        i2,
+        i3,
+        i4,
+        i5,
         allowedIps: clientConfig.defaultAllowedIps,
         dns: clientConfig.defaultDns,
         persistentKeepalive: clientConfig.defaultPersistentKeepalive,

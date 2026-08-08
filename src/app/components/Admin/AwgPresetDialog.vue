@@ -39,6 +39,7 @@
         </div>
 
         <label
+          v-if="!clientMode"
           class="mt-2 flex cursor-pointer items-center gap-2 rounded border border-gray-200 p-2.5 transition hover:border-gray-300 dark:border-neutral-700 dark:hover:border-neutral-600"
         >
           <input
@@ -70,9 +71,15 @@ const emit = defineEmits<{
   (e: 'apply', values: Record<string, any>): void;
 }>();
 
-defineProps<{
-  triggerClass?: string;
-}>();
+const props = withDefaults(
+  defineProps<{
+    triggerClass?: string;
+    clientMode?: boolean;
+  }>(),
+  {
+    clientMode: false,
+  }
+);
 
 const { t } = useI18n();
 
@@ -206,7 +213,7 @@ function generateRandomHeaderRanges(): {
 function applyPreset() {
   const preset = presets.value.find((p) => p.id === selectedPresetId.value);
   if (preset) {
-    if (preset.id === 'clean') {
+    if (props.clientMode || preset.id === 'clean' || !randomizeHeaders.value) {
       emit('apply', preset.values);
     } else {
       const ranges = generateRandomHeaderRanges();

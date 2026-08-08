@@ -21,6 +21,7 @@ import {
   safeStringRefine,
   schemaForType,
   t,
+  validateJMinMax,
 } from '#server/utils/types';
 
 export type ClientType = InferSelectModel<typeof client>;
@@ -112,7 +113,13 @@ export const ClientUpdateSchema = schemaForType<UpdateClientType>()(
     persistentKeepalive: PersistentKeepaliveSchema,
     serverEndpoint: AddressSchema.nullable(),
     dns: DnsSchema.nullable(),
-  })
+  }).refine(
+    (data) => validateJMinMax(data.jMin, data.jMax),
+    {
+      message: t('zod.generic.validNumberRange'),
+      path: ['jMin'],
+    }
+  )
 );
 
 const clientId = z.coerce.number({ message: t('zod.client.id') });

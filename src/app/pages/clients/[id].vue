@@ -203,6 +203,7 @@
               />
             </ClientsConfigDialog>
             <AdminAwgPresetDialog
+              client-mode
               trigger-class="col-span-2"
               @apply="applyAwgPreset"
             >

@@ -16,6 +16,7 @@ import {
   safeStringRefine,
   schemaForType,
   t,
+  validateJMinMax,
 } from '#server/utils/types';
 
 export type UserConfigType = InferSelectModel<typeof userConfig>;
@@ -51,5 +52,11 @@ export const UserConfigUpdateSchema = schemaForType<UserConfigUpdateType>()(
     defaultI4: ISchema,
     defaultI5: ISchema,
     host: host,
-  })
+  }).refine(
+    (data) => validateJMinMax(data.defaultJMin, data.defaultJMax),
+    {
+      message: t('zod.generic.validNumberRange'),
+      path: ['defaultJMin'],
+    }
+  )
 );
