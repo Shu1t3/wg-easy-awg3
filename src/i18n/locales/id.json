@@ -45,17 +45,17 @@
   },
   "setup": {
     "welcome": "Selamat datang di pengaturan pertama wg-easy anda",
-    "welcomeDesc": "Anda telah menemukan cara termudah untuk menginstal dan mengelola WireGuard di host Linux mana pun",
+    "welcomeDesc": "Anda telah menemukan cara termudah untuk menginstal dan mengelola AmneziaVPN di host Linux mana pun",
     "existingSetup": "Apakah anda sudah memiliki pengaturan sebelumnya?",
     "createAdminDesc": "Silakan masukkan dulu nama pengguna admin dan kata sandi yang kuat dan aman. Informasi ini akan digunakan untuk masuk ke panel administrasi Anda.",
-    "setupConfigDesc": "Silakan masukkan informasi host dan port. Ini akan digunakan untuk konfigurasi klien saat mengatur WireGuard di perangkat mereka.",
+    "setupConfigDesc": "Silakan masukkan informasi host dan port. Ini akan digunakan untuk konfigurasi klien saat mengatur AmneziaVPN di perangkat mereka.",
     "setupMigrationDesc": "Silakan berikan file cadangan jika anda ingin memigrasikan data dari versi wg-easy sebelumnya ke pengaturan baru anda.",
     "upload": "Unggah",
     "migration": "Pulihkan cadangan:",
     "createAccount": "Buat Akun",
     "successful": "Pengaturan berhasil",
     "hostDesc": "Hostname publik yang akan digunakan klien untuk terhubung",
-    "portDesc": "Port UDP publik yang akan digunakan klien untuk terhubung dan dibaca oleh WireGuard"
+    "portDesc": "Port UDP publik yang akan digunakan klien untuk terhubung dan dibaca oleh AmneziaVPN"
   },
   "update": {
     "updateAvailable": "Ada pembaruan tersedia!",
@@ -116,7 +116,7 @@
     "dnsDesc": "Server DNS yang akan digunakan klien (menggantikan konfigurasi global)",
     "notConnected": "Klien tidak terhubung",
     "endpoint": "Titik Akhir (Endpoint)",
-    "endpointDesc": "IP klien dari mana koneksi WireGuard dibuat"
+    "endpointDesc": "IP klien dari mana koneksi AmneziaVPN dibuat"
   },
   "dialog": {
     "change": "Ubah",
@@ -164,12 +164,12 @@
     "interface": {
       "cidrSuccess": "CIDR diperbarui",
       "device": "Perangkat",
-      "deviceDesc": "Perangkat Ethernet tempat lalu lintas WireGuard harus diteruskan",
-      "mtuDesc": "MTU yang akan digunakan oleh WireGuard",
-      "portDesc": "Port UDP yang akan didengarkan oleh WireGuard (Anda mungkin ingin mengubah Port Konfigurasi juga)",
+      "deviceDesc": "Perangkat Ethernet tempat lalu lintas AmneziaVPN harus diteruskan",
+      "mtuDesc": "MTU yang akan digunakan oleh AmneziaVPN",
+      "portDesc": "Port UDP yang akan didengarkan oleh AmneziaVPN (Anda mungkin ingin mengubah Port Konfigurasi juga)",
       "changeCidr": "Ubah CIDR",
       "restart": "Mulai Ulang Antarmuka",
-      "restartDesc": "Mulai ulang antarmuka WireGuard",
+      "restartDesc": "Mulai ulang antarmuka AmneziaVPN",
       "restartWarn": "Apakah Anda yakin ingin memulai ulang antarmuka? Ini akan membuat semua klien menjadi terputus.",
       "restartSuccess": "Antarmuka telah dimulai ulang."
     },

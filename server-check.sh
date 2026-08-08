@@ -4,7 +4,7 @@
 # AmneziaWG Easy (AWG 3.0) - Скрипт диагностики сервера, модуля ядра и Docker
 # ==============================================================================
 # Возможности скрипта:
-#   1. Проверка модуля ядра (amneziawg / wireguard) и демона AWG 3.0
+#   1. Проверка модуля ядра (amneziawg / wireguard) и сервиса AmneziaVPN
 #   2. Установка модуля ядра AmneziaWG в зависимости от ОС (DKMS / PPA / Исходники)
 #   3. Проверка конфигурации Docker и Docker Compose
 #   4. Проверка параметров хоста (sysctl forwarding, доступность портов, фаервол)
@@ -105,7 +105,7 @@ get_docker_compose_cmd() {
 }
 
 # ------------------------------------------------------------------------------
-# 1. Проверка модуля ядра AmneziaWG и WireGuard
+# 1. Проверка модуля ядра AmneziaWG и AmneziaVPN
 # ------------------------------------------------------------------------------
 
 check_kernel_module() {
@@ -144,10 +144,10 @@ check_kernel_module() {
     fi
   fi
 
-  # Проверка стандартного WireGuard
+  # Проверка стандартного AmneziaVPN / WireGuard
   if lsmod 2>/dev/null | grep -q "^wireguard\b"; then
     wg_loaded=true
-    log_info "Стандартный модуль ядра WireGuard (wireguard) также присутствует."
+    log_info "Стандартный модуль ядра AmneziaVPN / WireGuard (wireguard) также присутствует."
   fi
 
   return 0
@@ -619,9 +619,9 @@ check_health() {
       echo -e "${CYAN}----------------------------${NC}"
     fi
   elif docker exec "$container_id" wg show &> /dev/null; then
-    log_success "Интерфейс WireGuard (${BOLD}wg show${NC}) активен внутри контейнера."
+    log_success "Интерфейс AmneziaVPN (${BOLD}wg show${NC}) активен внутри контейнера."
   else
-    log_warn "Интерфейс WireGuard пока не инициализирован или находится в процессе запуска."
+    log_warn "Интерфейс AmneziaVPN пока не инициализирован или находится в процессе запуска."
   fi
 
   # Проверка отклика Web UI (HTTP проба)

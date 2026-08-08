@@ -45,7 +45,7 @@
   },
   "setup": {
     "welcome": "wg-easy kurulumuna hoş geldiniz",
-    "welcomeDesc": "Linux üzerinde WireGuard kurmanın ve yönetmenin en kolay yolu.",
+    "welcomeDesc": "Linux üzerinde AmneziaVPN kurmanın ve yönetmenin en kolay yolu.",
     "existingSetup": "Mevcut bir kurulumunuz var mı?",
     "createAdminDesc": "Yönetim paneline giriş için bir kullanıcı adı ve güçlü bir şifre belirleyin.",
     "setupConfigDesc": "İstemci cihazların bağlanacağı Host ve Port bilgilerini girin.",
@@ -55,7 +55,7 @@
     "createAccount": "Hesap Oluştur",
     "successful": "Kurulum Başarılı",
     "hostDesc": "İstemcilerin bağlanacağı public hostname/IP",
-    "portDesc": "WireGuard'ın dinleyeceği public UDP portu"
+    "portDesc": "AmneziaVPN'ın dinleyeceği public UDP portu"
   },
   "update": {
     "updateAvailable": "Yeni bir güncelleme mevcut!",
@@ -117,7 +117,7 @@
     "dnsDesc": "İstemci DNS sunucuları (global ayarı ezer)",
     "notConnected": "Bağlı Değil",
     "endpoint": "Endpoint",
-    "endpointDesc": "İstemcinin WireGuard bağlantısı kurduğu IP adresi",
+    "endpointDesc": "İstemcinin AmneziaVPN bağlantısı kurduğu IP adresi",
     "search": "İstemci ara...",
     "config": "Config",
     "viewConfig": "Config Görüntüle",
@@ -162,7 +162,7 @@
     "config": {
       "connection": "Bağlantı",
       "hostDesc": "İstemcilerin bağlanacağı Host (configleri etkiler)",
-      "portDesc": "İstemcilerin bağlanacağı UDP portu. Bunu değiştirmek mevcut istemci yapılandırmalarını geçersiz kılabilir ve WireGuard Arayüz Portu ile eşleşmelidir.",
+      "portDesc": "İstemcilerin bağlanacağı UDP portu. Bunu değiştirmek mevcut istemci yapılandırmalarını geçersiz kılabilir ve AmneziaVPN Arayüz Portu ile eşleşmelidir.",
       "allowedIpsDesc": "Genel Allowed IPs (izin verilen IP'ler)",
       "dnsDesc": "Global DNS",
       "mtuDesc": "Varsayılan MTU (yeni istemciler için)",
@@ -174,18 +174,18 @@
       "cidrSuccess": "CIDR güncellendi",
       "device": "Arayüz",
       "deviceDesc": "Trafiğin yönlendirileceği ağ arayüzü (ethernet)",
-      "mtuDesc": "WireGuard arayüz MTU'su",
-      "portDesc": "WireGuard dinleme portu",
+      "mtuDesc": "AmneziaVPN arayüz MTU'su",
+      "portDesc": "AmneziaVPN dinleme portu",
       "changeCidr": "CIDR Değiştir",
       "restart": "Arayüzü Yeniden Başlat",
-      "restartDesc": "WireGuard arayüzünü resetler",
+      "restartDesc": "AmneziaVPN arayüzünü resetler",
       "restartWarn": "Arayüzü yeniden başlatmak tüm istemci bağlantılarını koparacaktır. Emin misiniz?",
       "restartSuccess": "Arayüz yeniden başlatıldı",
       "firewall": "Trafik Filtreleme",
       "firewallEnabled": "İstemci Bazlı Firewall",
       "firewallEnabledDesc": "iptables kullanarak istemci trafiğini kısıtlayın."
     },
-    "introText": "Yönetici paneline hoş geldiniz.\n\nBuradan sistem ayarlarını, WireGuard yapılandırmasını ve Hooks ayarlarını yönetebilirsiniz."
+    "introText": "Yönetici paneline hoş geldiniz.\n\nBuradan sistem ayarlarını, AmneziaVPN yapılandırmasını ve Hooks ayarlarını yönetebilirsiniz."
   },
   "zod": {
     "generic": {

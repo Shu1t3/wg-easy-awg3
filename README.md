@@ -4,7 +4,7 @@
 [![AmneziaWG Protocol](https://img.shields.io/badge/AmneziaWG-v3.0-orange.svg)](https://github.com/amnezia-vpn/amneziawg-go)
 [![Docker Multi-Arch](https://img.shields.io/badge/Docker-amd64%20%7C%20arm64-blue)](build-and-push.sh)
 
-Modern, lightweight Web UI and VPN server with native **AmneziaWG 3.0 (AWG 3.0)** DPI-resistant obfuscation and standard **WireGuard** support.
+Modern, lightweight Web UI and VPN server with native **AmneziaWG 3.0 (AWG 3.0)** DPI-resistant obfuscation and standard **AmneziaVPN** support.
 
 ---
 
@@ -20,9 +20,9 @@ Modern, lightweight Web UI and VPN server with native **AmneziaWG 3.0 (AWG 3.0)*
   - **QUIC / HTTP/3 Handshake Mimic**: Simulates modern QUIC protocol connection opening.
   - **STUN Binding Request Mimic**: Bypasses restrictive enterprise firewalls by mimicking VoIP/WebRTC traffic.
   - **Standard AWG 3.0**: Dynamic random header ranges and standard padding.
-  - **Clean WireGuard**: Zero-overhead standard WireGuard for trusted networks.
+  - **Clean AmneziaVPN**: Zero-overhead standard AmneziaVPN for trusted networks.
 - **Per-Client Granular Configuration**: Each client can inherit server parameters or define custom junk packets and CPS signatures.
-- **Client Compatibility**: Fully compatible with the official **AmneziaVPN Client (v5.0.0.5+)**, AmneziaWG for Android/iOS/Windows/macOS/Linux, and standard WireGuard clients.
+- **Client Compatibility**: Fully compatible with the official **AmneziaVPN Client (v5.0.0.5+)**, AmneziaWG for Android/iOS/Windows/macOS/Linux, and standard AmneziaVPN clients.
 - **Automated Diagnostics & Management**: Web-based Path MTU calculation and presets, kernel module installer, Docker health checks, and Nginx Proxy Manager SSL.
 
 ---
@@ -133,7 +133,7 @@ A pre-configured **Nginx Proxy Manager** is integrated into `docker-compose.yml`
 | `INIT_IPV4_CIDR` | `10.8.0.0/24` | VPN IPv4 subnet |
 | `INIT_IPV6_CIDR` | `fdcc:ad94:bacf:61a3::/64` | VPN IPv6 subnet |
 | `INIT_ALLOWED_IPS` | `0.0.0.0/0, ::/0` | Allowed IPs for client configurations |
-| `INIT_MTU` | `1420` | MTU for WireGuard interface & client configs (or configure via Web UI) |
+| `INIT_MTU` | `1420` | MTU for AmneziaVPN interface & client configs (or configure via Web UI) |
 | `DISABLE_PASSWORD_AUTH` | `false` | Disable local password login (for OAuth only) |
 | `OAUTH_PROVIDERS` | - | Comma-separated: `google,github,oidc` |
 | `OAUTH_ALLOWED_DOMAINS`| - | Allowed email domains (e.g. `example.com`) |

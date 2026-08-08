@@ -31,7 +31,7 @@ export interface MtuCalculation {
 }
 
 /**
- * Calculates derived WireGuard and AmneziaWG MTU recommendations given a Path MTU.
+ * Calculates derived AmneziaVPN and AmneziaWG MTU recommendations given a Path MTU.
  */
 export function calculateMtuRecommendations(
   pmtu: number,
@@ -42,9 +42,9 @@ export function calculateMtuRecommendations(
 ): MtuCalculation {
   const safePmtu = Math.max(1280, Math.min(pmtu, 9000));
 
-  // WireGuard IPv4 overhead: 20B IPv4 + 8B UDP + 32B WireGuard = 60 bytes
+  // AmneziaVPN IPv4 overhead: 20B IPv4 + 8B UDP + 32B AmneziaVPN = 60 bytes
   const wgIpv4 = safePmtu - 60;
-  // WireGuard IPv6 overhead: 40B IPv6 + 8B UDP + 32B WireGuard = 80 bytes
+  // AmneziaVPN IPv6 overhead: 40B IPv6 + 8B UDP + 32B AmneziaVPN = 80 bytes
   const wgIpv6 = safePmtu - 80;
 
   // For AmneziaWG (AWG 3.0) with junk packets and CPS obfuscation:
@@ -71,14 +71,14 @@ export function calculateMtuRecommendations(
       value: wgIpv4,
       title: 'awg.mtuDialog.presetWgIpv4Title',
       desc: 'awg.mtuDialog.presetWgIpv4Desc',
-      badge: 'WireGuard IPv4',
+      badge: 'AmneziaVPN IPv4',
     },
     {
       id: 'wg-ipv6',
       value: wgIpv6,
       title: 'awg.mtuDialog.presetWgIpv6Title',
       desc: 'awg.mtuDialog.presetWgIpv6Desc',
-      badge: 'WireGuard IPv6',
+      badge: 'AmneziaVPN IPv6',
     },
     {
       id: 'double-tunnel',

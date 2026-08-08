@@ -197,7 +197,7 @@ const presetOptions = computed(() => {
       value: 1440,
       title: 'awg.mtuDialog.presetWgIpv4Title',
       desc: 'awg.mtuDialog.presetWgIpv4Desc',
-      badge: 'WireGuard IPv4',
+      badge: 'AmneziaVPN IPv4',
     },
     {
       id: 'double-tunnel',

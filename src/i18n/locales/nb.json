@@ -45,17 +45,17 @@
   },
   "setup": {
     "welcome": "Velkommen til ditt oppsett av wg-easy",
-    "welcomeDesc": "Du har funnet den enkleste måten å installere og administrere WireGuard på en hvilken som helst Linux-vert",
+    "welcomeDesc": "Du har funnet den enkleste måten å installere og administrere AmneziaVPN på en hvilken som helst Linux-vert",
     "existingSetup": "Har du et eksisterende oppsett?",
     "createAdminDesc": "Skriv først inn et adminbrukernavn og et sterkt, sikkert passord. Denne informasjonen brukes til å logge inn i administrasjonspanelet.",
-    "setupConfigDesc": "Skriv inn vert- og portinformasjon. Dette brukes til klientkonfigurasjonen når du setter opp WireGuard på enhetene deres.",
+    "setupConfigDesc": "Skriv inn vert- og portinformasjon. Dette brukes til klientkonfigurasjonen når du setter opp AmneziaVPN på enhetene deres.",
     "setupMigrationDesc": "Oppgi sikkerhetskopifilen hvis du vil migrere dataene dine fra forrige wg-easy-versjon til det nye oppsettet.",
     "upload": "Last opp",
     "migration": "Gjenopprett sikkerhetskopien:",
     "createAccount": "Opprett konto",
     "successful": "Oppsett vellykket",
     "hostDesc": "Offentlig vertsnavn klienter vil koble seg til",
-    "portDesc": "Offentlig UDP-port klienter vil koble til og WireGuard vil lytte på"
+    "portDesc": "Offentlig UDP-port klienter vil koble til og AmneziaVPN vil lytte på"
   },
   "update": {
     "updateAvailable": "En oppdatering er tilgjengelig!",
@@ -117,7 +117,7 @@
     "dnsDesc": "DNS-server klienter vil bruke (overstyrer global konfig)",
     "notConnected": "Klient ikke tilkoblet",
     "endpoint": "Endepunkt",
-    "endpointDesc": "IP-en til klienten som WireGuard-tilkoblingen etableres fra",
+    "endpointDesc": "IP-en til klienten som AmneziaVPN-tilkoblingen etableres fra",
     "search": "Søk etter klienter...",
     "config": "Konfigurasjon",
     "viewConfig": "Vis konfigurasjon"
@@ -168,12 +168,12 @@
     "interface": {
       "cidrSuccess": "CIDR endret",
       "device": "Enhet",
-      "deviceDesc": "Ethernet-enhet som WireGuard-trafikken skal videresendes gjennom",
-      "mtuDesc": "MTU WireGuard vil bruke",
-      "portDesc": "UDP-port WireGuard vil lytte på (du vil sannsynligvis også endre Konfig-port)",
+      "deviceDesc": "Ethernet-enhet som AmneziaVPN-trafikken skal videresendes gjennom",
+      "mtuDesc": "MTU AmneziaVPN vil bruke",
+      "portDesc": "UDP-port AmneziaVPN vil lytte på (du vil sannsynligvis også endre Konfig-port)",
       "changeCidr": "Endre CIDR",
       "restart": "Start grensesnitt på nytt",
-      "restartDesc": "Start WireGuard-grensesnittet på nytt",
+      "restartDesc": "Start AmneziaVPN-grensesnittet på nytt",
       "restartWarn": "Er du sikker på at du vil starte grensesnittet på nytt? Dette vil koble fra alle klienter.",
       "restartSuccess": "Grensesnitt startet på nytt"
     },

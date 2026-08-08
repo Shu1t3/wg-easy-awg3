@@ -1,7 +1,7 @@
 {
   "name": "wg-easy",
   "version": "15.4.0-shu1t3",
-  "description": "The easiest way to run WireGuard VPN + Web-based Admin UI.",
+  "description": "The easiest way to run AmneziaVPN + Web-based Admin UI.",
   "private": true,
   "type": "module",
   "scripts": {

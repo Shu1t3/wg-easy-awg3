@@ -45,17 +45,17 @@
   },
   "setup": {
     "welcome": "Benvenuto alla tua prima configurazione di wg-easy",
-    "welcomeDesc": "Hai trovato il modo più semplice per installare e gestire WireGuard su qualsiasi host Linux",
+    "welcomeDesc": "Hai trovato il modo più semplice per installare e gestire AmneziaVPN su qualsiasi host Linux",
     "existingSetup": "Hai già una configurazione esistente?",
     "createAdminDesc": "Inserisci prima un nome utente admin e una password forte e sicura. Queste informazioni verranno usate per accedere al pannello di amministrazione.",
-    "setupConfigDesc": "Inserisci le informazioni su host e porta. Saranno usate per la configurazione dei client quando imposteranno WireGuard sui loro dispositivi.",
+    "setupConfigDesc": "Inserisci le informazioni su host e porta. Saranno usate per la configurazione dei client quando imposteranno AmneziaVPN sui loro dispositivi.",
     "setupMigrationDesc": "Fornisci il file di backup se vuoi migrare i tuoi dati dalla precedente versione di wg-easy alla nuova installazione.",
     "upload": "Carica",
     "migration": "Ripristina backup:",
     "createAccount": "Crea Account",
     "successful": "Configurazione completata con successo",
     "hostDesc": "Nome host pubblico a cui i client si connetteranno",
-    "portDesc": "Porta UDP pubblica a cui i client si connetteranno e su cui WireGuard resterà in ascolto"
+    "portDesc": "Porta UDP pubblica a cui i client si connetteranno e su cui AmneziaVPN resterà in ascolto"
   },
   "update": {
     "updateAvailable": "È disponibile un aggiornamento!",
@@ -116,7 +116,7 @@
     "dnsDesc": "Server DNS che i client useranno (sovrascrive la config globale)",
     "notConnected": "Client non connesso",
     "endpoint": "Endpoint",
-    "endpointDesc": "IP del client da cui viene stabilita la connessione WireGuard"
+    "endpointDesc": "IP del client da cui viene stabilita la connessione AmneziaVPN"
   },
   "dialog": {
     "change": "Modifica",
@@ -164,12 +164,12 @@
     "interface": {
       "cidrSuccess": "CIDR modificato",
       "device": "Dispositivo",
-      "deviceDesc": "Dispositivo di rete attraverso cui instradare il traffico WireGuard",
-      "mtuDesc": "MTU usata da WireGuard",
-      "portDesc": "Porta UDP su cui WireGuard resterà in ascolto (probabilmente vuoi cambiare anche la Porta Config)",
+      "deviceDesc": "Dispositivo di rete attraverso cui instradare il traffico AmneziaVPN",
+      "mtuDesc": "MTU usata da AmneziaVPN",
+      "portDesc": "Porta UDP su cui AmneziaVPN resterà in ascolto (probabilmente vuoi cambiare anche la Porta Config)",
       "changeCidr": "Modifica CIDR",
       "restart": "Riavvia Interfaccia",
-      "restartDesc": "Riavvia l’interfaccia WireGuard",
+      "restartDesc": "Riavvia l’interfaccia AmneziaVPN",
       "restartWarn": "Sei sicuro di riavviare l’interfaccia? Tutti i client verranno disconnessi.",
       "restartSuccess": "Interfaccia riavviata"
     },

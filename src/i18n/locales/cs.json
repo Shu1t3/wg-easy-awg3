@@ -45,17 +45,17 @@
   },
   "setup": {
     "welcome": "Vítejte u první instalace wg-easy",
-    "welcomeDesc": "Našli jste nejjednodušší způsob, jak instalovat a spravovat WireGuard na jakémkoliv Linuxovém hostiteli",
+    "welcomeDesc": "Našli jste nejjednodušší způsob, jak instalovat a spravovat AmneziaVPN na jakémkoliv Linuxovém hostiteli",
     "existingSetup": "Máte již existující nastavení?",
     "createAdminDesc": "Nejprve zadejte uživatelské jméno administrátora a silné heslo. Tyto údaje budou použity pro přihlášení do administrace.",
-    "setupConfigDesc": "Zadejte údaje o hostiteli a portu. Tyto informace budou použity pro konfiguraci klientů při nastavování WireGuard na jejich zařízeních.",
+    "setupConfigDesc": "Zadejte údaje o hostiteli a portu. Tyto informace budou použity pro konfiguraci klientů při nastavování AmneziaVPN na jejich zařízeních.",
     "setupMigrationDesc": "Pokud chcete migrovat data z předchozí verze wg-easy do nové instalace, nahrajte soubor se zálohou.",
     "upload": "Nahrát",
     "migration": "Obnovit zálohu:",
     "createAccount": "Vytvořit účet",
     "successful": "Nastavení bylo úspěšné",
     "hostDesc": "Veřejný název hostitele, ke kterému se budou klienti připojovat",
-    "portDesc": "Veřejný UDP port, ke kterému se budou klienti připojovat a na kterém bude WireGuard naslouchat"
+    "portDesc": "Veřejný UDP port, ke kterému se budou klienti připojovat a na kterém bude AmneziaVPN naslouchat"
   },
   "update": {
     "updateAvailable": "Je k dispozici aktualizace!",
@@ -117,7 +117,7 @@
     "dnsDesc": "DNS server, který budou klienti používat (přebíjí globální nastavení)",
     "notConnected": "Klient není připojen",
     "endpoint": "Koncový bod",
-    "endpointDesc": "IP adresa klienta, ze které je navázáno spojení WireGuard",
+    "endpointDesc": "IP adresa klienta, ze které je navázáno spojení AmneziaVPN",
     "search": "Hledat klienty...",
     "config": "Konfigurace",
     "viewConfig": "Zobrazit konfiguraci"
@@ -168,12 +168,12 @@
     "interface": {
       "cidrSuccess": "CIDR změněn",
       "device": "Zařízení",
-      "deviceDesc": "Ethernetové zařízení, přes které má být provoz WireGuard přeposílán",
-      "mtuDesc": "MTU, které bude WireGuard používat",
-      "portDesc": "UDP port, na kterém bude WireGuard naslouchat (pravděpodobně budete chtít změnit i Konfigurační port)",
+      "deviceDesc": "Ethernetové zařízení, přes které má být provoz AmneziaVPN přeposílán",
+      "mtuDesc": "MTU, které bude AmneziaVPN používat",
+      "portDesc": "UDP port, na kterém bude AmneziaVPN naslouchat (pravděpodobně budete chtít změnit i Konfigurační port)",
       "changeCidr": "Změnit CIDR",
       "restart": "Restartovat rozhraní",
-      "restartDesc": "Restartovat rozhraní WireGuard",
+      "restartDesc": "Restartovat rozhraní AmneziaVPN",
       "restartWarn": "Opravdu chcete restartovat rozhraní? Dojde k odpojení všech klientů.",
       "restartSuccess": "Rozhraní bylo restartováno"
     },
