@@ -23,27 +23,22 @@ Modern, lightweight Web UI and VPN server with native **AmneziaWG 3.0 (AWG 3.0)*
   - **Clean WireGuard**: Zero-overhead standard WireGuard for trusted networks.
 - **Per-Client Granular Configuration**: Each client can inherit server parameters or define custom junk packets and CPS signatures.
 - **Client Compatibility**: Fully compatible with the official **AmneziaVPN Client (v5.0.0.5+)**, AmneziaWG for Android/iOS/Windows/macOS/Linux, and standard WireGuard clients.
-- **Automated Diagnostics & Management**: Included CLI utilities for Path MTU calculation, kernel module installation, Docker health checks, and Nginx Proxy Manager SSL.
+- **Automated Diagnostics & Management**: Web-based Path MTU calculation and presets, kernel module installer, Docker health checks, and Nginx Proxy Manager SSL.
 
 ---
 
 ## Quick Start & Server Diagnostics
 
-The repository includes `server-check.sh` and `check-mtu.sh` for fast deployment and diagnostic management:
+The repository includes `server-check.sh` and built-in Web Admin diagnostics for fast deployment and management:
 
 ```bash
-# 1. Measure Path MTU & calculate optimal MTU with AWG 3.0 overhead
-./check-mtu.sh
-# Or automatically apply optimal MTU to docker-compose.yml:
-./check-mtu.sh --apply
-
-# 2. (Optional) Install native DKMS kernel module for Ubuntu, Debian, RHEL/CentOS, Fedora, Arch, Alpine
+# 1. (Optional) Install native DKMS kernel module for Ubuntu, Debian, RHEL/CentOS, Fedora, Arch, Alpine
 sudo ./server-check.sh --install-module
 
-# 3. Start the project with Docker Compose
+# 2. Start the project with Docker Compose
 ./server-check.sh --start
 
-# 4. Perform deep health check of container, network interface, and Web UI
+# 3. Perform deep health check of container, network interface, and Web UI
 ./server-check.sh --health
 ```
 
@@ -138,7 +133,7 @@ A pre-configured **Nginx Proxy Manager** is integrated into `docker-compose.yml`
 | `INIT_IPV4_CIDR` | `10.8.0.0/24` | VPN IPv4 subnet |
 | `INIT_IPV6_CIDR` | `fdcc:ad94:bacf:61a3::/64` | VPN IPv6 subnet |
 | `INIT_ALLOWED_IPS` | `0.0.0.0/0, ::/0` | Allowed IPs for client configurations |
-| `INIT_MTU` | `1420` | MTU for WireGuard interface & client configs (run `./check-mtu.sh`) |
+| `INIT_MTU` | `1420` | MTU for WireGuard interface & client configs (or configure via Web UI) |
 | `DISABLE_PASSWORD_AUTH` | `false` | Disable local password login (for OAuth only) |
 | `OAUTH_PROVIDERS` | - | Comma-separated: `google,github,oidc` |
 | `OAUTH_ALLOWED_DOMAINS`| - | Allowed email domains (e.g. `example.com`) |
